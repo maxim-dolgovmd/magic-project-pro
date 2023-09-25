@@ -1,14 +1,13 @@
 import React from "react";
 import styled from "styled-components";
 import Image from "next/image";
-import { useDispatch } from "react-redux";
 
 import {IIngredient, Order, setOrderModal} from '../../redux/slices/addCartSlice'
 import {statusCategories} from "../statusCategories/statusCategories";
 import { useAppDispatch } from "@/components/redux/store";
 import { device } from "../device/device";
 
-
+// xui
 const OrderBlock = styled.div`
   padding: 24px;
   /* width: 844px; */
