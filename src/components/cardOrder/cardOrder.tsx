@@ -7,7 +7,6 @@ import {statusCategories} from "../statusCategories/statusCategories";
 import { useAppDispatch } from "@/components/redux/store";
 import { device } from "../device/device";
 
-// xui
 const OrderBlock = styled.div`
   padding: 24px;
   /* width: 844px; */
