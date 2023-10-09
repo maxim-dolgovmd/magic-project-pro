@@ -558,6 +558,9 @@ const DinamickPath: React.FC<ModalType> = (props) => {
   console.log(props)
   const orderObject = props?.order
   console.log(orderObject)
+  const dateAfter = orderObject?.createdAt.split('T')[1].split('.')[0].replaceAll('-', ',')
+  const dateBefore  =orderObject?.createdAt.split('T')[0].replaceAll('-', '.').split('.').reverse().join('.')
+  const dateOrder = `${dateBefore}, ${dateAfter}`
   
   const numberId = orderObject?._id?.slice(-4)
 
@@ -595,7 +598,7 @@ const DinamickPath: React.FC<ModalType> = (props) => {
       </CompoundBlock>
       <BoxTime>
         <TimeOrder>
-          {new Date(orderObject?.createdAt).toLocaleString()}
+          {dateOrder}
         </TimeOrder>
         <PriceSum>
           <Price>{orderObject?.price}</Price>

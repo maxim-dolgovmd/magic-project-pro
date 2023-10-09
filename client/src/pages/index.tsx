@@ -300,10 +300,7 @@ const Constructor: React.FC = () => {
             createOrder(isProduct)
         }
     }
-
-    // const sortCategory = [...categoriesData?.categories]
-    // const sortTest = sortCategory.sort((a: categoryType, b: categoryType) => a.id - b.id)
-    // console.log(sortTest)
+    
 
     const arrIngrReduce = arrayProduct?.reduce((acc: any, ingredient: IIngredient, index: number) => {
         if (filterIngr?.category === 'Все') {

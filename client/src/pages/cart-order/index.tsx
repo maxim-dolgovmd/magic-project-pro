@@ -21,6 +21,7 @@ import IngridientBurger from "@/components/components/ingridient/ingridientBurge
 import { device } from "@/components/components/device/device";
 import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
 import useDeviceHeight from "@/components/utils/useDeviceHeight";
+import { StorageSelect } from "@/components/redux/slices/storageSlice";
 
 
 const Window = styled.div`
@@ -127,6 +128,7 @@ const CardBurgerMobile = () => {
     const [createOrder, { isLoading, isSuccess, isError }] = usePostOrderMutation()
 
     const { isMenuClicked } = useSelector(AddCartSelect)
+    const {user} = useSelector(StorageSelect)
     const router = useRouter()
     const dispatch = useAppDispatch()
 
@@ -137,6 +139,16 @@ const CardBurgerMobile = () => {
     const {heightMobile} = useDeviceHeight()
     const ScrollMobile = Number(heightMobile) - 152
     console.log(ScrollMobile)
+
+    const createOrderFunc = () => {
+        if (!user) {
+            alert('Для создания заказа необходимо авторизоваться')
+        } else {
+            dispatch(setActiveOrder(true))
+            dispatch(setDeleteOrder())
+            createOrder(isProduct)
+        }
+    }
 
 
     return (
@@ -182,12 +194,7 @@ const CardBurgerMobile = () => {
                             </BoxSum>
                             <Button
                                 size="small"
-                                onClick={() => {
-                                    dispatch(setActiveOrder(true))
-                                    dispatch(setDeleteOrder())
-                                    createOrder(isProduct)
-                                    router.push('/')
-                                }}
+                                onClick={createOrderFunc}
                                 disabled={addProduct.length === 0}
                             >
                                 Оформить заказ

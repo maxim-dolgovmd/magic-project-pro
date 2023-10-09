@@ -13,7 +13,16 @@ import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
 import { useAppDispatch } from "@/components/redux/store";
 import { setIsMenuClicked } from '../../redux/slices/addCartSlice'
+import { StorageSelect, setUser } from "@/components/redux/slices/storageSlice";
 
+type AciveButton = {
+    active?: any
+    access?: any
+}
+
+type AciveImage = {
+    active?: any
+}
 
 const Window = styled.div`
     position: fixed;
@@ -31,9 +40,6 @@ const Block = styled.div`
     width: 100%;
 `
 
-type AciveImage = {
-    active?: any
-}
 const BoxBlock = styled.div`
     display: flex;
     gap: 8px;
@@ -82,32 +88,61 @@ const ListIcon = styled.ul`
     }}
 `
 
-type AciveButton = {
-    active?: any
-  }
-  
-  const Button = styled.div`
-    display: flex;
-    font-weight: 400;
-    font-size: 16px;
-    line-height: 20px;
-    align-items: center;
-    padding: 15px 0 15px 32px;
-    color: #8585ad;
-  
-    span:hover {
-      cursor: pointer;
-      color: #f2f2f3;
+const AccountBlock = styled.div`
+
+${(props: AciveButton) => {
+    return (
+    props.access && {
+        display: 'none'
     }
-  
+    );
+}}
+`
+
+const OrderAccsess = styled.div`
+    display: none;
+
     ${(props: AciveButton) => {
-      return (
-        props.active && {
-          color: "#F2F2F3",
-        }
-      );
+        return (
+            props.access && {
+                display: 'flex'
+            }
+        )
     }}
-  `;
+`
+  
+const Button = styled.div`
+display: flex;
+font-weight: 400;
+font-size: 16px;
+line-height: 20px;
+align-items: center;
+padding: 15px 0 15px 32px;
+color: #8585ad;
+
+span:hover {
+    cursor: pointer;
+    color: #f2f2f3;
+}
+
+${(props: AciveButton) => {
+    return (
+    props.active && {
+        color: "#F2F2F3",
+    }
+    );
+}}
+`;
+
+const IconActive = styled.div`
+    ${(props: AciveButton) => {
+    return (
+    props.active && {
+        display: 'none'
+    }
+    );
+}}
+`
   
 
 const Navbar = () => {
@@ -115,23 +150,42 @@ const Navbar = () => {
     const { isMenuClicked } = useSelector(AddCartSelect)
     const router = useRouter()
     const dispatch = useAppDispatch()
-
+    const {user} = useSelector(StorageSelect)
     const [activeList, setActiveList] = useState(false)
+    console.log(user)
+
+    const activeFuncList = () => {
+        if (!user) {
+            router.push('registration/sign-in')
+            dispatch(setIsMenuClicked(false))
+        } else {
+            setActiveList(!activeList)
+        }
+    }
+
+    const exitTheAccount = () => {
+        if (window.confirm('Вы действительно хотите выйти с личного кабинета ?')) {
+          window.localStorage.removeItem('token')
+          dispatch(setUser(''))
+          dispatch(setIsMenuClicked(false))
+          router.push('/')
+        }
+      }
 
     return (
         <Window >
             <Block>
-                <div>
-                    <AccountBox onClick={() => setActiveList(!activeList)}>
+                <AccountBlock>
+                    <AccountBox onClick={activeFuncList}>
                         <div >
                             <BoxBlock >
                                 <Profile />
                                 <div>Личный кабинет</div>
                             </BoxBlock>
                         </div>
-                        <div>
+                        <IconActive active={!user}>
                             {activeList ? <IconUp /> : <IconDown />}
-                        </div>
+                        </IconActive>
                     </AccountBox>
                     <ListIcon activeList={activeList}>
                         <li>
@@ -155,12 +209,12 @@ const Navbar = () => {
                             </Button>
                         </li>
                         <li>
-                            <Button>
+                            <Button onClick={exitTheAccount}>
                                 <span>Выход</span>
                             </Button>
                         </li>
                     </ListIcon>
-                </div>
+                </AccountBlock>
                 <div>
                     <Link 
                         href={'/'} 
@@ -172,7 +226,7 @@ const Navbar = () => {
                         </BoxBlock>
                     </Link>
                 </div>
-                <div>
+                <OrderAccsess access={user==='admin@admin.com'}>
                     <Link 
                         href={'/feed'} 
                         onClick={() => dispatch(setIsMenuClicked(false))}
@@ -182,7 +236,7 @@ const Navbar = () => {
                             <div>Лента заказов</div>
                         </BoxBlock>
                     </Link>
-                </div>
+                </OrderAccsess>
             </Block>
         </Window>
     )
