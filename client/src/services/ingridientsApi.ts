@@ -17,9 +17,28 @@ export const ingridientApi: any = createApi({
                 }
             },
         }),
+
+        createIngridient: builder.mutation<any, any>({
+            query: ({largePhotoUrl, normalPhotoUrl, mobilePhotoUrl, previewPhotoUrl, price, name, category}) => {
+                return {
+                    url: '/ingridients',
+                    method: 'POST',
+                    body: {
+                        largePhotoUrl,
+                        normalPhotoUrl,
+                        mobilePhotoUrl,
+                        previewPhotoUrl,
+                        price,
+                        name,
+                        category
+                    }
+                }
+            }
+        })
     })
 })
 
 export const {
+    useCreateIngridientMutation,
     useGetIngridientQuery, 
 } = ingridientApi

@@ -30,7 +30,7 @@ export const createIngridient = async (req, res) => {
             quantity: req.body.quantity,
         })
 
-        const ingridient = await ingridient.save()
+        const ingridient = await doc.save()
 
         res.json({ingridient})
 

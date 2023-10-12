@@ -300,7 +300,7 @@ const Constructor: React.FC = () => {
             createOrder(isProduct)
         }
     }
-    
+
 
     const arrIngrReduce = arrayProduct?.reduce((acc: any, ingredient: IIngredient, index: number) => {
         if (filterIngr?.category === 'Все') {
@@ -315,6 +315,8 @@ const Constructor: React.FC = () => {
 
     console.log(arrIngrReduce)
 
+
+   
     
     return (
         <Box>

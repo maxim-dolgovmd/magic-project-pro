@@ -1,6 +1,7 @@
 import {configureStore} from '@reduxjs/toolkit'
 import addCart from './slices/addCartSlice'
 import storage from './slices/storageSlice'
+import newIngr from './slices/ingridientSlice'
 import {ingridientApi} from '../services/ingridientsApi'
 import {ordersApi} from '../services/ordersApi'
 import {registrationApi} from '../services/registrationApi'
@@ -11,6 +12,7 @@ export const store = configureStore({
     reducer: {
         addCart,
         storage,
+        newIngr,
         [ingridientApi.reducerPath]: ingridientApi.reducer,
         [ordersApi.reducerPath]: ordersApi.reducer,
         [registrationApi.reducerPath]: registrationApi.reducer,

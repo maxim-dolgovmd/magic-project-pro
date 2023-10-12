@@ -44,6 +44,11 @@ const ReadyStatus = styled.ul`
   gap: 8px;
 `;
 
+const Box = styled.div`
+  display: flex;
+  flex-direction: column;
+`
+
 
 type StatusTypeProps = {
   order: Order[],
@@ -52,12 +57,19 @@ type StatusTypeProps = {
 
 const StatusOrder: React.FC<StatusTypeProps> = (props) => {
     console.log(props)
+    const array = props?.order
     const numberId = props?.order?.[0]?._id?.slice(-4)
     return (
         <ReadiOrder active={!props?.order}>
             <TextStatus>{props.status}:</TextStatus>
             <ReadyStatus>
-                <li>{numberId}</li>
+                {
+                  array?.map((obj) => {
+                    return (
+                      <Box>{obj._id.slice(-4)}</Box>
+                    )
+                  })
+                }
             </ReadyStatus>
         </ReadiOrder>
     )

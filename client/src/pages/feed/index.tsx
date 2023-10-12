@@ -29,6 +29,12 @@ import BaseInput from "@/components/components/input/baseInput";
 import { useForm } from "react-hook-form";
 import { TokenGetMeFunc } from "@/components/utils/tokenGetMeFunc";
 import { useGetMeMutation } from "@/components/services/registrationApi";
+import Image from "next/image";
+import IconDown from '../../../public/iconDown.svg'
+import IconUp from '../../../public/iconUp.svg'
+import InputUpdateOrder from "@/components/components/input/inputUpdateOrder";
+import InputCreateOrder from "@/components/components/input/inputCreateOrder";
+import { IngrNewSelect } from "@/components/redux/slices/ingridientSlice";
 
 const Box = styled.div`
   padding-top: 150px;
@@ -193,7 +199,72 @@ const BlockButton = styled.div`
 const BlockUpdate = styled.div`
   display: flex;
   flex-direction: column;
+  margin-bottom: 20px;
+  margin-top: 20px;
   gap: 16px;
+`
+
+type TypeActiveUpdate = {
+  activeUpdate: boolean
+}
+
+const BlockActive = styled.div`
+  overflow: hidden;
+  max-height: 0px;
+  transition: 0.5s ease-out;
+
+  ${(props: TypeActiveUpdate) => {
+    return props.activeUpdate && {
+      maxHeight: '270px',
+      transition: '0.5s ease-in'
+    }
+  }};
+`
+
+const BlockIngrActive = styled(BlockActive)`
+  ${(props: TypeActiveUpdate) => {
+    return props.activeUpdate && {
+      maxHeight: '750px',
+      transition: '0.5s ease-in'
+    }
+  }};
+`
+
+const OrderInfoUpdate = styled.div`
+  display: flex;
+  justify-content: space-between;
+  cursor: pointer;
+`
+
+type TypeActive = {
+  active: boolean
+}
+const BoxParams = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  overflow: hidden;
+  max-height: 0px;
+  transition: 0.5s ease-out;
+
+  ${(props: TypeActive) => {
+    return props.active && {
+      maxHeight: '620px',
+      transition: '0.5s ease-in'
+    }
+  }};
+`
+
+const IngridientInfo = styled.div`
+  display: flex;
+  justify-content: space-between;
+  cursor: pointer;
+`
+
+const InfoBlockParams = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 `
 
 const tsStatus = {
@@ -231,14 +302,14 @@ export interface Order {
 const OrderFeet: React.FC = () => {
 
   const dispatch = useAppDispatch()
+  const {newIngridient} = useSelector(IngrNewSelect)
+  const [infoOrders, setInfoOrders] = React.useState(false)
   const {register, handleSubmit, formState: {errors}} = useForm({mode: 'onBlur'})
   const [updateStatusId] = useUpdateStatusIdMutation()
   const [getMe] = useGetMeMutation()
   const router = useRouter()
 
-  const OnSubmit = handleSubmit((data) => {
-    updateStatusId(data)
-  })
+  
   
   React.useEffect(() => {
     const fetchMe = async () => {
@@ -260,7 +331,7 @@ const OrderFeet: React.FC = () => {
 
   const { heightMobile } = useDeviceHeight()
   console.log(heightMobile)
-  const heightScroll = Number(heightMobile) - 100
+  const heightScroll = Number(heightMobile) 
 
  
   const { isMobile } = useDeviceDetect()
@@ -309,45 +380,30 @@ const OrderFeet: React.FC = () => {
                     </OverlayScrollbarsComponent>
                   </div>
                   : <BoxInfo>
-                     <BlockUpdate>
-                      <BaseInput 
-                        label="id ордера"
-                        error={errors.orderId?.message}
-                        register={{
-                          ...register('orderId', {
-                              required: 'Укажите id'
-                          })
-                        }}
-                      />
-                      <BaseInput 
-                        label="статус ордера"
-                        error={errors.statusId?.message}
-                        register={{
-                          ...register('statusId', {
-                              required: 'Укажите статус'
-                          })
-                        }}
-                      />
-                      <BlockButton>
-                        <ButtonComponent onClick={OnSubmit} size='small'>Изменить статус</ButtonComponent>
-                      </BlockButton>
-                    </BlockUpdate>
-                    <GridStatus>
-                      <StatusOrder order={ordersMap?.get('closed')} status={tsStatus['closed']} />
-                      <StatusOrder order={ordersMap?.get('canceled')} status={tsStatus['canceled']} />
-                      <StatusOrder order={ordersMap?.get('handed over to courier')} status={tsStatus['handed over to courier']} />
-                    </GridStatus>
-                    <CompletedOrder>
-                      <BlockThisTime>
-                        <TextStatus>Кол-во заказов за все время:</TextStatus>
-                        <NumbersOfOrder>{orders?.length}</NumbersOfOrder>
-                      </BlockThisTime>
-                      <BlockForToday>
-                        <TextStatus>Кол-во заказов за сегодня:</TextStatus>
-                        <NumbersOfOrder>{day?.length}</NumbersOfOrder>
-                      </BlockForToday>
-                    </CompletedOrder>
-                  </BoxInfo>) :
+                      <div>
+                        <InputUpdateOrder />
+                      </div>
+                      <div>
+                        <InputCreateOrder />
+                      </div>
+                      <BoxParams active={newIngridient}>
+                        <GridStatus>
+                          <StatusOrder order={ordersMap?.get('closed')} status={tsStatus['closed']} />
+                          <StatusOrder order={ordersMap?.get('canceled')} status={tsStatus['canceled']} />
+                          <StatusOrder order={ordersMap?.get('handed over to courier')} status={tsStatus['handed over to courier']} />
+                        </GridStatus>
+                        <CompletedOrder>
+                          <BlockThisTime>
+                            <TextStatus>Кол-во заказов за все время:</TextStatus>
+                            <NumbersOfOrder>{orders?.length}</NumbersOfOrder>
+                          </BlockThisTime>
+                          <BlockForToday>
+                            <TextStatus>Кол-во заказов за сегодня:</TextStatus>
+                            <NumbersOfOrder>{day?.length}</NumbersOfOrder>
+                          </BlockForToday>
+                        </CompletedOrder>
+                      </BoxParams>
+                    </BoxInfo>) :
                 <>
                   <div>
                     <OverlayScrollbarsComponent>
@@ -364,44 +420,38 @@ const OrderFeet: React.FC = () => {
                     </OverlayScrollbarsComponent>
                   </div>
                   <BoxInfo>
-                  <BlockUpdate>
-                      <BaseInput 
-                        label="id ордера"
-                        error={errors.orderId?.message}
-                        register={{
-                          ...register('orderId', {
-                              required: 'Укажите id'
-                          })
-                        }}
-                      />
-                      <BaseInput 
-                        label="статус ордера"
-                        error={errors.statusId?.message}
-                        register={{
-                          ...register('statusId', {
-                              required: 'Укажите статус'
-                          })
-                        }}
-                      />
-                      <BlockButton>
-                        <ButtonComponent onClick={OnSubmit} size='small'>Изменить статус</ButtonComponent>
-                      </BlockButton>
-                    </BlockUpdate>
-                    <GridStatus>
-                      <StatusOrder order={ordersMap?.get('closed')} status={tsStatus['closed']} />
-                      <StatusOrder order={ordersMap?.get('canceled')} status={tsStatus['canceled']} />
-                      <StatusOrder order={ordersMap?.get('handed over to courier')} status={tsStatus['handed over to courier']} />
-                    </GridStatus>
-                    <CompletedOrder>
-                      <BlockThisTime>
-                        <TextStatus>Кол-во заказов за все время:</TextStatus>
-                        <NumbersOfOrder>{orders?.length}</NumbersOfOrder>
-                      </BlockThisTime>
-                      <BlockForToday>
-                        <TextStatus>Кол-во заказов за сегодня:</TextStatus>
-                        <NumbersOfOrder>{day?.length}</NumbersOfOrder>
-                      </BlockForToday>
-                    </CompletedOrder>
+                    <div>
+                      <InputUpdateOrder />
+                    </div>
+                    <div>
+                      <InputCreateOrder />
+                    </div>
+                    <InfoBlockParams>
+                      <IngridientInfo onClick={() => setInfoOrders(!infoOrders)}>
+                          <TextStatus>Общая информация</TextStatus>
+                          <div >
+                              {infoOrders ? <IconUp /> : <IconDown />}
+                          </div>
+                      </IngridientInfo>
+                      <BoxParams active={infoOrders}>
+                        <GridStatus>
+                          <StatusOrder order={ordersMap?.get('closed')} status={tsStatus['closed']} />
+                          <StatusOrder order={ordersMap?.get('canceled')} status={tsStatus['canceled']} />
+                          <StatusOrder order={ordersMap?.get('ready')} status={tsStatus['ready']} />
+                          <StatusOrder order={ordersMap?.get('handed over to courier')} status={tsStatus['handed over to courier']} />
+                        </GridStatus>
+                        <CompletedOrder>
+                          <BlockThisTime>
+                            <TextStatus>Кол-во заказов за все время:</TextStatus>
+                            <NumbersOfOrder>{orders?.length}</NumbersOfOrder>
+                          </BlockThisTime>
+                          <BlockForToday>
+                            <TextStatus>Кол-во заказов за сегодня:</TextStatus>
+                            <NumbersOfOrder>{day?.length}</NumbersOfOrder>
+                          </BlockForToday>
+                        </CompletedOrder>
+                      </BoxParams>
+                    </InfoBlockParams>
                   </BoxInfo>
                 </>
             }
