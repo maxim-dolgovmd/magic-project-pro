@@ -75,7 +75,7 @@ const ImageOrders = styled.div`
   justify-content: space-between;
   align-items: center;
   
-  @media ${device.tablet} {
+  @media ${device.laptop} {
     flex-direction: column;
     gap: 16px;
     align-items: flex-start;
@@ -85,7 +85,7 @@ const ImageOrders = styled.div`
 const ImageBlock = styled.div`
   /* position: relative; */
   display: flex;
-  @media ${device.tablet} {
+  @media ${device.laptop} {
     max-width: 320px;
   }
   @media ${device.mobileL} {
@@ -148,7 +148,7 @@ const Price = styled.div`
         }
     }
 
-    @media ${device.mobileL} {
+    @media ${device.laptop} {
     :first-child {
       top: 0;
       left: 0;

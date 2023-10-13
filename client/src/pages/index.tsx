@@ -38,6 +38,7 @@ import { useGetCategoryQuery } from "../services/categoriesApi";
 import { useGetMeMutation } from "../services/registrationApi";
 import { StorageSelect, setUser } from "../redux/slices/storageSlice";
 import SkeletonCategory from "../components/skeleton/skeletonCaterory";
+import axios from "axios";
 
 const Box = styled.div`
     display: flex;
@@ -247,7 +248,7 @@ const Constructor: React.FC = () => {
     const { heightMobile } = useDeviceHeight()
     const heightScrollIngr = Number(heightMobile) - 310
     const heightScrollCart = Number(heightMobile) - 415
-    const { user} = useSelector(StorageSelect);
+    const { user } = useSelector(StorageSelect);
     const [getMe] = useGetMeMutation()
 
     console.log(user)
@@ -255,7 +256,7 @@ const Constructor: React.FC = () => {
 
     React.useEffect(() => {
         const fetchMe = async () => {
-            const {data}: any = await getMe()
+            const { data }: any = await getMe()
             if (Object.keys(data || '').length > 0) {
                 dispatch(setUser(data?.email))
             }
@@ -265,8 +266,8 @@ const Constructor: React.FC = () => {
 
     const router = useRouter()
 
-    const {data: categoriesData, isLoading: loadingCategory} = useGetCategoryQuery()
-    const {data: arrayProduct, isLoading: Loading} = useGetIngridientQuery()
+    const { data: categoriesData, isLoading: loadingCategory } = useGetCategoryQuery()
+    const { data: arrayProduct, isLoading: Loading } = useGetIngridientQuery()
     // const categories = useGetIngridientQuery('categories')
     const [createOrder, { isLoading, isSuccess, isError }] = usePostOrderMutation()
     // const orderGet = useGetOrderQuery({limit: 12, offset: 0})
@@ -277,7 +278,7 @@ const Constructor: React.FC = () => {
     });
     console.log(categoriesData)
 
-    const { sumProduct, addProduct, activeIngr, activeOrder} = useSelector(AddCartSelect);
+    const { sumProduct, addProduct, activeIngr, activeOrder } = useSelector(AddCartSelect);
 
     const hasBunds = addProduct?.find((product: IIngredient) => product.category === 'Булки')
 
@@ -316,8 +317,30 @@ const Constructor: React.FC = () => {
     console.log(arrIngrReduce)
 
 
-   
-    
+    const promise = new Promise((resolve, reject) => {
+        setTimeout(() => {
+            console.log('Preparing data...')
+            const data = {
+                modified: true
+            }
+            resolve(data)
+        }, 2000);
+    })
+
+    promise.then((data) => {
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                console.log('Promise resolded')
+                resolve(data)
+                // reject(data)
+            }, 1500);
+        })
+    })
+    .then((clientData) => {
+        console.log('Data received', clientData)
+    })
+    .catch((err) => console.error('Error', err))
+
     return (
         <Box>
             <ContentContainer>
@@ -331,21 +354,21 @@ const Constructor: React.FC = () => {
                                         <SkeletonCategory />
                                     ) : (
                                         [...categoriesData?.categories]
-                                            ?.sort((a: categoryType,b: categoryType) => a.id-b.id)
+                                            ?.sort((a: categoryType, b: categoryType) => a.id - b.id)
                                             ?.map((obj: categoryType, index: any) => {
-                                            console.log(obj)
-                                            return (
-                                                <Tab
-                                                    key={index}
-                                                    status={filterIngr?.id === obj?.id}
-                                                    onClick={() => {
-                                                        setFilterIngr(obj);
-                                                    }}
-                                                >
-                                                    {obj.category}
-                                                </Tab>
-                                            )
-                                        })
+                                                console.log(obj)
+                                                return (
+                                                    <Tab
+                                                        key={index}
+                                                        status={filterIngr?.id === obj?.id}
+                                                        onClick={() => {
+                                                            setFilterIngr(obj);
+                                                        }}
+                                                    >
+                                                        {obj.category}
+                                                    </Tab>
+                                                )
+                                            })
                                     )
                                 }
                             </GridTab>
@@ -362,22 +385,22 @@ const Constructor: React.FC = () => {
                                                 [...arrIngrReduce]
                                                     ?.sort((a: IIngredient, b: IIngredient) => a.category.localeCompare(b.category))
                                                     ?.map((ingr: IIngredient) => {
-                                                    return (
-                                                        // <LoadingSkeleton />
-                                                        <Ingridient
-                                                            key={ingr?._id}
-                                                            nameItem={ingr?.name}
-                                                            photo={`http://localhost:5555${ingr?.largePhotoUrl}`}
-                                                            price={ingr?.price}
-                                                            objIngredient={ingr}
-                                                            hasBunds={hasBunds}
-                                                            addMap={addMap(ingr?._id)}
-                                                        />
-                                                    )
-                                                })
-                                            ) 
+                                                        return (
+                                                            // <LoadingSkeleton />
+                                                            <Ingridient
+                                                                key={ingr?._id}
+                                                                nameItem={ingr?.name}
+                                                                photo={`http://localhost:5555${ingr?.largePhotoUrl}`}
+                                                                price={ingr?.price}
+                                                                objIngredient={ingr}
+                                                                hasBunds={hasBunds}
+                                                                addMap={addMap(ingr?._id)}
+                                                            />
+                                                        )
+                                                    })
+                                            )
                                         }
-                                       
+
                                     </GridMenu>
                                 </ScrollHeight>
                             </OverlayScrollbarsComponent>
@@ -387,7 +410,7 @@ const Constructor: React.FC = () => {
                             <OverlayScrollbarsComponent>
                                 <GridBurger heightScrollCart={heightScrollCart}>
                                     {addProduct?.length > 0 ? (
-                                        <CardBurger addProduct={addProduct}/>
+                                        <CardBurger addProduct={addProduct} />
                                     ) : (
                                         <div>Ваша корзина пуста</div>
                                     )}

@@ -7,6 +7,7 @@ import Header from '../components/header/header'
 import { Provider } from 'react-redux'
 import { store } from '../redux/store'
 import React from 'react'
+import ScrollComponent from '../components/scroll/scrollComponent'
 
 export default function App({ Component, pageProps }: AppProps) {
 
@@ -17,7 +18,7 @@ return (
         <Header />
       </header>
       <Component {...pageProps} />
-
+      <ScrollComponent/>
     </div>
   </Provider>
 )}
