@@ -155,6 +155,7 @@ const PersonalArea:React.FC = () => {
       dispatch(setUser(''))
       router.push('/')
     }
+    
   }
 
   return (
