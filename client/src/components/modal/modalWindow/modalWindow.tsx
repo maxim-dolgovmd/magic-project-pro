@@ -8,6 +8,7 @@ import {ProductSelect, setActiveIngr} from '../../../redux/slices/addCartSlice'
 import Modal from '../modal'
 import { useAppDispatch } from "@/components/redux/store";
 import { device } from "../../device/device";
+import Close from '../../../assets/icon/close.svg'
 
 const BlockModal = styled.div`
     padding: 40px 40px 60px 40px;
@@ -22,7 +23,7 @@ const TitleIngr = styled.div`
     display: flex;
     justify-content: space-between;
     align-items: center;
-    color: #F2F2F3;
+    color: ${({ theme }) => theme.modalWindow};
 
     @media ${device.tablet} {
         padding-bottom: 50px;
@@ -48,6 +49,12 @@ const Title = styled.div`
 const CloseIngr = styled.div`
     padding-left: 20px;
     cursor: pointer;
+`
+
+const CloseImg = styled(Close)`
+    svg path {
+        fill: ${({ theme }) => theme.modalWindow};
+    }
 `
 
 const LargePhoto = styled.div`
@@ -121,14 +128,14 @@ const ModalWindow: React.FC = () => {
                 <TitleIngr>
                     <Title>Детали ингредиента</Title>
                     <CloseIngr onClick={() => dispatch(setActiveIngr(false))}>
-                        <Image src='/close.svg' width={18} height={18} alt="CloseSvg" />
+                        <CloseImg/>
                     </CloseIngr>
                 </TitleIngr>
                 <LargePhoto>
-                    <Image src={product.largePhotoUrl} width={480} height={240} alt="Image" unoptimized />
+                    <Image src={`http://localhost:5555${product?.largePhotoUrl}`} width={480} height={240} alt="Image" unoptimized />
                 </LargePhoto>
                 <DetailsIngr>
-                    <NameItem>{product.name}</NameItem>
+                    <NameItem>{product?.name}</NameItem>
                     <Calories>
                         <BlockCal>
                             <div>Калории,ккал</div>

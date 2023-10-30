@@ -21,12 +21,13 @@
     "next": "13.3.1",
     "overlayscrollbars-react": "^0.5.0",
     "postcss": "8.4.23",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
+    "react": ">=16.8.0",
+    "react-dom": ">=16.8.0",
     "react-hook-form": "^7.43.9",
     "react-query": "^3.39.3",
     "react-redux": "^8.0.5",
     "react-router-dom": "^6.11.1",
+    "react-select": "^5.7.7",
     "styled-components": "^5.3.10",
     "tailwindcss": "3.3.1",
     "typescript": "5.0.4"
@@ -37,5 +38,5 @@
   "peerDependencies": {
     "react": ">=16.8.0",
     "react-dom": ">=16.8.0"
- }
+  }
 }

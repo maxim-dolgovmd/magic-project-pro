@@ -10,10 +10,11 @@ export const TokenGetMeFunc = () => {
     React.useEffect(() => {
         const fetchMe = async () => {
             const {data}: any = await getMe()
-            if (!Object.keys(data || '').length) {
+            console.log(data)
+            if (!Object.keys(data || []).length) {
               router.push('/')
             }
-            if (Object.keys(data || 0).length > 0) {
+            if (Object.keys(data || []).length > 0) {
               dispatch(setUser(data?.email))
             }
         }

@@ -5,7 +5,6 @@ import Container from "../../../components/container/container";
 import BaseInput from '../../../components/input/baseInput'
 import ButtonComponent from '../../../components/button/button'
 import { useForm } from "react-hook-form";
-import { useRouter } from "next/router"
 import Link from 'next/link';
 import { device } from "@/components/components/device/device";
 
@@ -32,7 +31,6 @@ const ColumnSignIn = styled.div`
 `
 
 const Title = styled.div`
-    color: #F2F2F3;
     font-weight: 700;
     font-size: 24px;
     line-height: 30px;

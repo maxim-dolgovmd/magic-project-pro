@@ -1,4 +1,6 @@
-export const getObjStatus = (array: any) => {
+import { Order } from "../redux/slices/addCartSlice"
+
+export const getObjStatus = (array: Order[]) => {
     const map = new Map()
 
     // ключ - статус 

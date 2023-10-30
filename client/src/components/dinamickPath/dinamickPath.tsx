@@ -1,15 +1,16 @@
 import React from "react";
-import styled from "styled-components";
+import styled, { ThemeProvider } from "styled-components";
 
 import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
 import IngridientOrder from "../ingridient/ingridientOrder";
-import Image from "next/image";
+import CloseImg from '../../assets/icon/close.svg'
 
 import { IIngredient, StatusType, setActiveIngr } from "@/components/redux/slices/addCartSlice";
 import { device, size } from "../device/device";
-import { useRouter } from "next/router";
-import { useAppDispatch } from "@/components/redux/store";
-import { statusCategories } from "../statusCategories/statusCategories";
+import PriceImg from '../../assets/icon/price.svg'
+import { darkTheme, lightTheme } from "../theme/theme";
+import { useSelector } from "react-redux";
+import { ThemeModeSelect } from "@/components/redux/slices/storageSlice";
 
 const startDate = new Date('2023-01-01');
 const endDate = new Date('2023-12-31');
@@ -21,334 +22,15 @@ function generateRandomDate(start: Date, end: Date) {
   return ''+new Date(randomTime);
 }
 
-export const orders = [
-  {
-    order_number: 1432,
-    date_created: generateRandomDate(startDate, endDate),
-    name: 'Заказ 1',
-    price: 960,
-    status: 'ready',
-    ingredients: [
-      {
-        id: 0,
-        largePhotoUrl: "/illustration/crator/cratorLarge.png",
-        normalPhotoUrl: "/illustration/crator/cratorMobile.png",
-        mobilePhotoUrl: "/illustration/crator/cratorNormal.png",
-        previewPhotoUrl: "/illustration/crator/cratorPreview.png",
-        price: 30,
-        name: "Краторная булка N-200i",
-        category: "Булки",
-        quantity: 2,
-      },
-      {
-        id: 2,
-        largePhotoUrl: "/illustration/file/fileLarge.png",
-        normalPhotoUrl: "/illustration/file/fileNormal.png",
-        mobilePhotoUrl: "/illustration/file/fileMobile.png",
-        previewPhotoUrl: "/illustration/file/filePreview.png",
-        price: 300,
-        name: "Филе Люминесцентного тетраодонтимформа",
-        category: "Начинки",
-        quantity: 1,
-      },
-      {
-        id: 3,
-        largePhotoUrl: "/illustration/meat/meatLarge.png",
-        normalPhotoUrl: "/illustration/meat/meatNormal.png",
-        mobilePhotoUrl: "/illustration/meat/meatMobile.png",
-        previewPhotoUrl: "/illustration/meat/meatPreview.png",
-        price: 300,
-        name: "Мясо бессмертных моллюсков Protostomia",
-        category: "Начинки",
-        quantity: 2,
-      },
-      {
-        id: 4,
-        largePhotoUrl: "/illustration/meteorite/meteoriteLarge.png",
-        normalPhotoUrl: "/illustration/meteorite/meteoriteNormal.png",
-        mobilePhotoUrl: "/illustration/meteorite/meteoriteMobile.png",
-        previewPhotoUrl: "/illustration/meteorite/meteoritePreview.png",
-        price: 300,
-        name: "Говяжий метеорит (отбивная)",
-        category: "Начинки",
-        quantity: 1,
-      },
-      {
-        id: 0,
-        largePhotoUrl: "/illustration/crator/cratorLarge.png",
-        normalPhotoUrl: "/illustration/crator/cratorMobile.png",
-        mobilePhotoUrl: "/illustration/crator/cratorNormal.png",
-        previewPhotoUrl: "/illustration/crator/cratorPreview.png",
-        price: 30,
-        name: "Краторная булка N-200i",
-        category: "Булки",
-        quantity: 2,
-      },
-    ],
-  },
-  {
-    order_number: 2322,
-    date_created: generateRandomDate(startDate, endDate),
-    name: 'Заказ 2',
-    price: 360,
-    status: 'in preparation',
-    ingredients: [
-      {
-        id: 0,
-        largePhotoUrl: "/illustration/crator/cratorLarge.png",
-        normalPhotoUrl: "/illustration/crator/cratorMobile.png",
-        mobilePhotoUrl: "/illustration/crator/cratorNormal.png",
-        previewPhotoUrl: "/illustration/crator/cratorPreview.png",
-        price: 30,
-        name: "Краторная булка N-200i",
-        category: "Булки",
-        quantity: 2,
-      },
-      {
-        id: 4,
-        largePhotoUrl: "/illustration/meteorite/meteoriteLarge.png",
-        normalPhotoUrl: "/illustration/meteorite/meteoriteNormal.png",
-        mobilePhotoUrl: "/illustration/meteorite/meteoriteMobile.png",
-        previewPhotoUrl: "/illustration/meteorite/meteoritePreview.png",
-        price: 300,
-        name: "Говяжий метеорит (отбивная)",
-        category: "Начинки",
-        quantity: 1,
-      },
-      {
-        id: 0,
-        largePhotoUrl: "/illustration/crator/cratorLarge.png",
-        normalPhotoUrl: "/illustration/crator/cratorMobile.png",
-        mobilePhotoUrl: "/illustration/crator/cratorNormal.png",
-        previewPhotoUrl: "/illustration/crator/cratorPreview.png",
-        price: 30,
-        name: "Краторная булка N-200i",
-        category: "Булки",
-        quantity: 2,
-      },
-    ],
-  },
-  {
-    order_number: 4324,
-    date_created: generateRandomDate(startDate, endDate),
-    name: 'Заказ 3',
-    price: 660,
-    status: 'handed over to courier',
-    ingredients: [
-      {
-        id: 0,
-        largePhotoUrl: "/illustration/crator/cratorLarge.png",
-        normalPhotoUrl: "/illustration/crator/cratorMobile.png",
-        mobilePhotoUrl: "/illustration/crator/cratorNormal.png",
-        previewPhotoUrl: "/illustration/crator/cratorPreview.png",
-        price: 30,
-        name: "Краторная булка N-200i",
-        category: "Булки",
-        quantity: 2,
-      },
-      {
-        id: 4,
-        largePhotoUrl: "/illustration/meteorite/meteoriteLarge.png",
-        normalPhotoUrl: "/illustration/meteorite/meteoriteNormal.png",
-        mobilePhotoUrl: "/illustration/meteorite/meteoriteMobile.png",
-        previewPhotoUrl: "/illustration/meteorite/meteoritePreview.png",
-        price: 300,
-        name: "Говяжий метеорит (отбивная)",
-        category: "Начинки",
-        quantity: 1,
-      },
-      {
-        id: 4,
-        largePhotoUrl: "/illustration/meteorite/meteoriteLarge.png",
-        normalPhotoUrl: "/illustration/meteorite/meteoriteNormal.png",
-        mobilePhotoUrl: "/illustration/meteorite/meteoriteMobile.png",
-        previewPhotoUrl: "/illustration/meteorite/meteoritePreview.png",
-        price: 300,
-        name: "Говяжий метеорит (отбивная)",
-        category: "Начинки",
-        quantity: 1,
-      },
-      {
-        id: 0,
-        largePhotoUrl: "/illustration/crator/cratorLarge.png",
-        normalPhotoUrl: "/illustration/crator/cratorMobile.png",
-        mobilePhotoUrl: "/illustration/crator/cratorNormal.png",
-        previewPhotoUrl: "/illustration/crator/cratorPreview.png",
-        price: 30,
-        name: "Краторная булка N-200i",
-        category: "Булки",
-        quantity: 2,
-      },
-    ],
-  },
-  {
-    order_number: 8762,
-    date_created: generateRandomDate(startDate, endDate),
-    name: 'Заказ 4',
-    price: 670,
-    status: 'canceled',
-    ingredients: [
-      {
-        id: 1,
-        largePhotoUrl: "/illustration/bun/bunLarge.png",
-        normalPhotoUrl: "/illustration/bun/bunNormal.png",
-        mobilePhotoUrl: "/illustration/bun/bunMobile.png",
-        previewPhotoUrl: "/illustration/bun/bunPreview.png",
-        price: 20,
-        name: "Флюоресцентная булка R2-D3",
-        category: "Булки",
-        quantity: 1,
-      },
-      {
-        id: 6,
-        largePhotoUrl: "/illustration/sauce/sauceLarge.png",
-        normalPhotoUrl: "/illustration/sauce/sauceNormal.png",
-        mobilePhotoUrl: "/illustration/sauce/sauceMobile.png",
-        previewPhotoUrl: "/illustration/sauce/saucePreview.png",
-        price: 30,
-        name: "Соус Spicy-X",
-        category: "Соусы",
-        quantity: 1,
-      },
-      {
-        id: 4,
-        largePhotoUrl: "/illustration/meteorite/meteoriteLarge.png",
-        normalPhotoUrl: "/illustration/meteorite/meteoriteNormal.png",
-        mobilePhotoUrl: "/illustration/meteorite/meteoriteMobile.png",
-        previewPhotoUrl: "/illustration/meteorite/meteoritePreview.png",
-        price: 300,
-        name: "Говяжий метеорит (отбивная)",
-        category: "Начинки",
-        quantity: 1,
-      },
-      {
-        id: 5,
-        largePhotoUrl: "/illustration/bioCutlet/bioCutletLarge.png",
-        normalPhotoUrl: "/illustration/bioCutlet/bioCutletNormal.png",
-        mobilePhotoUrl: "/illustration/bioCutlet/bioCutletMobile.png",
-        previewPhotoUrl: "/illustration/bioCutlet/bioCutletPreview.png",
-        price: 300,
-        name: "Биокотлета из марсианской Магнолии",
-        category: "Начинки",
-        quantity: 1,
-      },
-      {
-        id: 1,
-        largePhotoUrl: "/illustration/bun/bunLarge.png",
-        normalPhotoUrl: "/illustration/bun/bunNormal.png",
-        mobilePhotoUrl: "/illustration/bun/bunMobile.png",
-        previewPhotoUrl: "/illustration/bun/bunPreview.png",
-        price: 20,
-        name: "Флюоресцентная булка R2-D3",
-        category: "Булки",
-        quantity: 1,
-      },
-    ],
-  },
-  {
-    order_number: 1236,
-    date_created: generateRandomDate(startDate, endDate),
-    name: 'Заказ 5',
-    price: 1300,
-    status: 'closed',
-    ingredients: [
-      {
-        id: 1,
-        largePhotoUrl: "/illustration/bun/bunLarge.png",
-        normalPhotoUrl: "/illustration/bun/bunNormal.png",
-        mobilePhotoUrl: "/illustration/bun/bunMobile.png",
-        previewPhotoUrl: "/illustration/bun/bunPreview.png",
-        price: 20,
-        name: "Флюоресцентная булка R2-D3",
-        category: "Булки",
-        quantity: 1,
-      },
-      {
-        id: 6,
-        largePhotoUrl: "/illustration/sauce/sauceLarge.png",
-        normalPhotoUrl: "/illustration/sauce/sauceNormal.png",
-        mobilePhotoUrl: "/illustration/sauce/sauceMobile.png",
-        previewPhotoUrl: "/illustration/sauce/saucePreview.png",
-        price: 30,
-        name: "Соус Spicy-X",
-        category: "Соусы",
-        quantity: 1,
-      },
-      {
-        id: 4,
-        largePhotoUrl: "/illustration/meteorite/meteoriteLarge.png",
-        normalPhotoUrl: "/illustration/meteorite/meteoriteNormal.png",
-        mobilePhotoUrl: "/illustration/meteorite/meteoriteMobile.png",
-        previewPhotoUrl: "/illustration/meteorite/meteoritePreview.png",
-        price: 300,
-        name: "Говяжий метеорит (отбивная)",
-        category: "Начинки",
-        quantity: 1,
-      },
-      {
-        id: 5,
-        largePhotoUrl: "/illustration/bioCutlet/bioCutletLarge.png",
-        normalPhotoUrl: "/illustration/bioCutlet/bioCutletNormal.png",
-        mobilePhotoUrl: "/illustration/bioCutlet/bioCutletMobile.png",
-        previewPhotoUrl: "/illustration/bioCutlet/bioCutletPreview.png",
-        price: 300,
-        name: "Биокотлета из марсианской Магнолии",
-        category: "Начинки",
-        quantity: 1,
-      },
-      {
-        id: 6,
-        largePhotoUrl: "/illustration/sauce/sauceLarge.png",
-        normalPhotoUrl: "/illustration/sauce/sauceNormal.png",
-        mobilePhotoUrl: "/illustration/sauce/sauceMobile.png",
-        previewPhotoUrl: "/illustration/sauce/saucePreview.png",
-        price: 30,
-        name: "Соус Spicy-X",
-        category: "Соусы",
-        quantity: 1,
-      },
-      {
-        id: 4,
-        largePhotoUrl: "/illustration/meteorite/meteoriteLarge.png",
-        normalPhotoUrl: "/illustration/meteorite/meteoriteNormal.png",
-        mobilePhotoUrl: "/illustration/meteorite/meteoriteMobile.png",
-        previewPhotoUrl: "/illustration/meteorite/meteoritePreview.png",
-        price: 300,
-        name: "Говяжий метеорит (отбивная)",
-        category: "Начинки",
-        quantity: 1,
-      },
-      {
-        id: 5,
-        largePhotoUrl: "/illustration/bioCutlet/bioCutletLarge.png",
-        normalPhotoUrl: "/illustration/bioCutlet/bioCutletNormal.png",
-        mobilePhotoUrl: "/illustration/bioCutlet/bioCutletMobile.png",
-        previewPhotoUrl: "/illustration/bioCutlet/bioCutletPreview.png",
-        price: 300,
-        name: "Биокотлета из марсианской Магнолии",
-        category: "Начинки",
-        quantity: 1,
-      },
-      {
-        id: 1,
-        largePhotoUrl: "/illustration/bun/bunLarge.png",
-        normalPhotoUrl: "/illustration/bun/bunNormal.png",
-        mobilePhotoUrl: "/illustration/bun/bunMobile.png",
-        previewPhotoUrl: "/illustration/bun/bunPreview.png",
-        price: 20,
-        name: "Флюоресцентная булка R2-D3",
-        category: "Булки",
-        quantity: 1,
-      },
-    ],
-  },
-];
+
 
 const BlockOrder = styled.div`
   display: flex;
   flex-direction: column;
   width: 640px;
-  color: #f2f2f3;
+  >div {
+    color: ${({theme}) => theme.dinamicPathTitle}
+  }
 
   @media ${device.tablet} {
     width: 100%;
@@ -371,6 +53,10 @@ const PriceSum = styled.div`
   display: flex;
   gap: 8px;
   align-items: center;
+
+  svg path {
+    fill: ${({ theme }) => theme.dinamicPathTitle}
+  }
 `;
 
 const Price = styled.div`
@@ -473,67 +159,17 @@ const Title = styled.div`
 `
 
 const CloseIngr = styled.div`
-    @media ${device.mobileL} {
-      padding-right: 16px;
-    }
-    cursor: pointer;
+  cursor: pointer;
+  @media ${device.mobileL} {
+    padding-right: 16px;
+  }
+  svg path {
+    fill: ${({theme}) => theme.menuClose}
+  }
 `
-
-// export const getStaticPaths = async () => {
-//   const response = await fetch('http://localhost:3000/api/orders?limit=12&offset=0', {
-//     method: 'GET',
-//     headers: {
-//         authorization: 'Bearer.access_token',
-//         role: 'admin',
-//     },
-//   })
-//   const data = await response.json()
-
-//   const paths = data?.orders?.map((order) => {
-//     return {
-//       params: {id: String(order?.order_number)}
-//     }
-//   })
-
-//   return {
-//     paths,
-//     fallback: false,
-//   }
-// }
-
-// export const getStaticProps = async (context) => {
-//   const id = context?.params?.id
-
-//   const response = await fetch(`http://localhost:3000/api/orders?limit=12&offset=0/${id}`, {
-//     method: 'GET',
-//     headers: {
-//         authorization: 'Bearer.access_token',
-//         role: 'admin',
-//     },
-//   })
-//   const data = await response.json()
-//   console.log(data)
-
-//   return {
-//     props: {order: data}
-//   }
-// } 
-
-interface OrderPropsType {
-  props: any,
-  // closedModal: () => void,
-  // status: string
-}
 
 type IdNumberType = {
   id: string,
-}
-
-interface ContextType {
-  params: IdNumberType,
-  locales: any,
-  locale: any,
-  defaultLocale: any,
 }
 
 type StatusTypeEn = 'ready' | 'in preparation' | 'handed over to courier' | 'canceled' | 'closed';
@@ -556,6 +192,7 @@ interface ModalType {
 const DinamickPath: React.FC<ModalType> = (props) => {
 
   console.log(props)
+  const themeMode = useSelector(ThemeModeSelect)
   const orderObject = props?.order
   console.log(orderObject)
   const dateAfter = orderObject?.createdAt.split('T')[1].split('.')[0].replaceAll('-', ',')
@@ -565,11 +202,12 @@ const DinamickPath: React.FC<ModalType> = (props) => {
   const numberId = orderObject?._id?.slice(-4)
 
   return (
+    <ThemeProvider theme={themeMode === 'light' ? darkTheme : lightTheme}>
     <BlockOrder>
       <TitleIngr>
         {/* <Title>Детали ингредиента</Title> */}
         <CloseIngr onClick={props?.closedModal}>
-          <Image src='/close.svg' width={18} height={18} alt="CloseSvg" />
+          <CloseImg/>
         </CloseIngr>
       </TitleIngr>
       <Identificator># {numberId}</Identificator>
@@ -602,10 +240,11 @@ const DinamickPath: React.FC<ModalType> = (props) => {
         </TimeOrder>
         <PriceSum>
           <Price>{orderObject?.price}</Price>
-          <Image src="/price.svg" width={24} height={24} alt="PriceSvg" />
+          <PriceImg/>
         </PriceSum>
       </BoxTime>
     </BlockOrder>
+    </ThemeProvider>
   );
 };
 

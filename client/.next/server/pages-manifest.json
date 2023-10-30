@@ -2,7 +2,9 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/feed/[id]": "pages/feed/[id].js",
+  "/account/order-history": "pages/account/order-history.js",
   "/": "pages/index.js",
-  "/feed": "pages/feed.js"
+  "/feed": "pages/feed.js",
+  "/registration/sign-in": "pages/registration/sign-in.js",
+  "/account/profile": "pages/account/profile.js"
 }

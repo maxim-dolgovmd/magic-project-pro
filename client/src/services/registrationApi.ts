@@ -5,6 +5,14 @@ export interface UserAuthType {
     password: string,
 }
 
+interface GetMeResultType {
+    createdAt: string,
+    updatedAt: string,
+    email: string,
+    username: string,
+    _id: string
+}
+
 export interface UserRegisrType {
     email: string,
     username: string,
@@ -20,7 +28,7 @@ export const registrationApi = createApi({
     }),
     endpoints: (builder) => ({
 
-        PostRegistration: builder.mutation<null, UserRegisrType>({
+        PostRegistration: builder.mutation<void, UserRegisrType>({
             query: ({username, email, password}) => {
                 return {
                     url: '/register',
@@ -34,7 +42,7 @@ export const registrationApi = createApi({
             }
         }),
 
-        PostAuthorization: builder.mutation<null, UserAuthType>({
+        PostAuthorization: builder.mutation<void, UserAuthType>({
             query: ({email, password}) => {
                 return {
                     url: '/login',
@@ -47,7 +55,7 @@ export const registrationApi = createApi({
             }
         }),
 
-        GetMe: builder.mutation<any, void>({
+        GetMe: builder.mutation<GetMeResultType, void>({
             query: () => {
                 return {
                     url: '/me',

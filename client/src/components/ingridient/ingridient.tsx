@@ -1,9 +1,10 @@
 import React from "react";
-import styled from "styled-components";
+import styled, { ThemeProvider } from "styled-components";
 
 import Image from "next/image";
+import PriceImage from '../../assets/icon/price.svg'
 
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import useDeviceDetect from "@/components/hooks/useDeviceDetect";
 
 import IngridientMobile from "./ingridientMobile";
@@ -16,6 +17,8 @@ import {
   IngredientPropsTypes,
 } from "../../redux/slices/addCartSlice";
 import { useAppDispatch } from "@/components/redux/store";
+import { darkTheme, lightTheme } from "../theme/theme";
+import { ThemeModeSelect } from "@/components/redux/slices/storageSlice";
 
 const Wrapper = styled.div`
   display: flex;
@@ -36,6 +39,10 @@ const Box = styled.div`
   font-weight: 400;
   font-size: 20px;
   line-height: 18px;
+
+  svg path {
+    fill: ${({ theme }) => theme.text};
+  }
 `;
 
 const BoxImage = styled.div`
@@ -65,8 +72,13 @@ const BoxName = styled.div`
   font-size: 16px;
   line-height: 24px;
   text-align: center;
-  color: #f2f2f3;
+  color: ${({ theme }) => theme.ingridientTextBox};
 `;
+
+const Price = styled.div`
+  color: ${({ theme }) => theme.ingridientTextBox};
+`
+
 
 
 const Ingridient: React.FC<IngredientPropsTypes> = (props) => {
@@ -80,7 +92,7 @@ const Ingridient: React.FC<IngredientPropsTypes> = (props) => {
     addMap,
   } = props
 
-
+  const themeMode = useSelector(ThemeModeSelect)
   const dispatch = useAppDispatch();
 
   const addProductCart = () => {
@@ -96,36 +108,38 @@ const Ingridient: React.FC<IngredientPropsTypes> = (props) => {
     dispatch(setActiveIngr(status))
   };
   const {isMobile} = useDeviceDetect()
-  console.log(isMobile)
 
   return (
-    <Wrapper >
-      {isMobile ? <IngridientMobile ingredient = {props}/> : 
-        <Block>
-        <BoxImage>
-          <div style={{ cursor: "pointer" }} onClick={() => activeModal(true)}>
-            <Image
-              src={photo}
-              width={240}
-              height={120}
-              alt="Crator"
-              unoptimized
-            />
-          </div>
+    <ThemeProvider theme={ themeMode === 'light' ? darkTheme : lightTheme}>
+      <Wrapper >
+        {isMobile ? <IngridientMobile ingredient = {props}/> : 
+          <Block>
+          <BoxImage>
+            <div style={{ cursor: "pointer" }} onClick={() => activeModal(true)}>
+              <Image
+                src={photo}
+                width={240}
+                height={120}
+                alt="Crator"
+                unoptimized
+              />
+            </div>
 
-          <Counter onClick={addProductCart}>
-            {
-              addMap ? addMap : 0
-            }
-          </Counter>
-        </BoxImage>
-        <Box>
-          <div>{price}</div>
-          <Image src="/price.svg" width={24} height={24} alt="PriceSvg" />
-        </Box>
-        <BoxName>{nameItem}</BoxName>
-      </Block>}
-    </Wrapper>
+            <Counter onClick={addProductCart}>
+              {
+                addMap ? addMap : 0
+              }
+            </Counter>
+          </BoxImage>
+          <Box>
+            <Price>{price}</Price>
+            {/* <ImageSrc src="/price.svg" width={24} height={24} alt="PriceSvg" /> */}
+            <PriceImage />
+          </Box>
+          <BoxName>{nameItem}</BoxName>
+        </Block>}
+      </Wrapper>
+    </ThemeProvider>
   );
 }
 

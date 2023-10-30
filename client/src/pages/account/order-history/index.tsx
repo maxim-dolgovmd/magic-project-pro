@@ -1,22 +1,22 @@
-import React, { useState } from "react";
-import styled from "styled-components";
+import React from "react";
+import styled, { ThemeProvider } from "styled-components";
 import Container from "../../../components/container/container";
 import CardOrder from "../../../components/cardOrder/cardOrder";
-// import { useRouter } from "next/router"
 import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useGetOrderQuery } from "../../../services/ordersApi";
 
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import useDeviceHeight from "@/components/hooks/useDeviceHeight";
 
-import { AddCartSelect, Order, setActiveIngr, } from "../../../redux/slices/addCartSlice";
+import {Order } from "../../../redux/slices/addCartSlice";
 import { statusCategories } from "@/components/components/statusCategories/statusCategories";
 import { useAppDispatch } from "@/components/redux/store";
 import { device, size } from "@/components/components/device/device";
-import { StorageSelect, setUser } from "@/components/redux/slices/storageSlice";
+import { ThemeModeSelect, setUser } from "@/components/redux/slices/storageSlice";
 import { TokenGetMeFunc } from "@/components/utils/tokenGetMeFunc";
+import { darkTheme, lightTheme } from "@/components/components/theme/theme";
 
 const Box = styled.div`
   padding-top: 150px;
@@ -41,7 +41,7 @@ const ButtonBox = styled.div`
 `;
 
 type AciveButton = {
-  active?: any
+  active?: boolean
 }
 
 const Button = styled.div`
@@ -50,19 +50,19 @@ const Button = styled.div`
   font-size: 24px;
   line-height: 30px;
   align-items: center;
-  background: #131316;
+  background: ${({ theme }) => theme.buttonProfile};
   padding: 15px 0 15px 0;
   color: #8585ad;
 
   span:hover {
     cursor: pointer;
-    color: #f2f2f3;
+    color: ${({theme}) => theme.buttonHoverProfile};
   }
 
   ${(props: AciveButton) => {
     return (
       props.active && {
-        color: "#F2F2F3",
+        color: '#64646e'
       }
     );
   }}
@@ -127,8 +127,9 @@ const ContainerStyle = styled(Container)`
 
 
 const OrderHistory: React.FC = () => {
+
+  const themeMode = useSelector(ThemeModeSelect)
   const router = useRouter()
-  const {user} = useSelector(StorageSelect)
 
   TokenGetMeFunc()
 
@@ -150,51 +151,53 @@ const OrderHistory: React.FC = () => {
   }
 
   return (
-    <ContainerStyle>
-      <Box>
-        <TitleCategory>История заказов</TitleCategory>
-        <ContentCategory>
-          <ButtonBox>
-            <Button>
-              <Link href={"/account/profile"}>
-                <span>Профиль </span>
-              </Link>
-            </Button>
-            <Button active={!activeButton} onClick={() => setActiveButton(false)}>
-              <span>История заказов </span>
-            </Button>
-            <Button active={activeButton} onClick={exitTheAccount}>
-              <span>Выход</span>
-            </Button>
-          </ButtonBox>
-          <Title>
-            <span>
-              В этом разделе вы можете просмотреть свою историю заказов
-            </span>
-          </Title>
-        </ContentCategory>
-        <OverlayScrollbarsComponent>
-          <BoxOrder heightScroll={heightScroll}>
-            {
-              isLoading ? <div>Идет загрузка...</div> : (
-                orderGet?.length > 0 ? (
-                  orderGet?.map((obj: Order) => {
-                    console.log(obj.status)
-                    return (
-                      <Link key={obj._id} href={`/account/order-history/${obj._id}`} >
-                        <CardOrder orders={obj} status={statusCategories[obj.status]} />
-                      </Link>
-                    )
-                  })
-                ) : (
-                  <div>Ваша история заказов пуста :(</div>
+    <ThemeProvider theme={themeMode === 'light' ? darkTheme : lightTheme}>
+      <ContainerStyle>
+        <Box>
+          <TitleCategory>История заказов</TitleCategory>
+          <ContentCategory>
+            <ButtonBox>
+              <Button>
+                <Link href={"/account/profile"}>
+                  <span>Профиль </span>
+                </Link>
+              </Button>
+              <Button active={!activeButton} onClick={() => setActiveButton(false)}>
+                <span>История заказов </span>
+              </Button>
+              <Button active={activeButton} onClick={exitTheAccount}>
+                <span>Выход</span>
+              </Button>
+            </ButtonBox>
+            <Title>
+              <span>
+                В этом разделе вы можете просмотреть свою историю заказов
+              </span>
+            </Title>
+          </ContentCategory>
+          <OverlayScrollbarsComponent>
+            <BoxOrder heightScroll={heightScroll}>
+              {
+                isLoading ? <div>Идет загрузка...</div> : (
+                  Object.keys(orderGet || [])?.length > 0 ? (
+                    orderGet?.map((obj: Order) => {
+                      console.log(obj.status)
+                      return (
+                        <Link key={obj._id} href={`/account/order-history/${obj._id}`} >
+                          <CardOrder orders={obj} status={statusCategories[obj.status]} />
+                        </Link>
+                      )
+                    })
+                  ) : (
+                    <div>Ваша история заказов пуста :(</div>
+                  )
                 )
-              )
-            }
-          </BoxOrder>
-        </OverlayScrollbarsComponent>
-      </Box>
-    </ContainerStyle>
+              }
+            </BoxOrder>
+          </OverlayScrollbarsComponent>
+        </Box>
+      </ContainerStyle>
+    </ThemeProvider>
   );
 }
 

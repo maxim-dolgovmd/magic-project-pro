@@ -4,7 +4,7 @@ const Input = styled.input`
     position: relative;
     font-size: 16px;
     padding: 16px;
-    background: #2F2F37;
+    background: ${({ theme }) => theme.backgroundCart};
     border-radius: 40px;
     border: none;
     font-weight: 400;

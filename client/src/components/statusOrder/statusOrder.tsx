@@ -12,7 +12,7 @@ interface Order {
 }
 
 type PropsOrderType = {
-  active: any
+  active: boolean
 }
 
 const ReadiOrder = styled.div`
@@ -28,7 +28,7 @@ const ReadiOrder = styled.div`
 `;
 
 const TextStatus = styled.div`
-  color: #f2f2f3;
+  color: ${({ theme }) => theme.feedStaticOrderStatus};
   font-weight: 700;
   font-size: 24px;
   line-height: 30px;

@@ -17,7 +17,8 @@ const Tab = styled.button<TabType>`
     display: flex;
     justify-content: center;
     align-items: center;
-    background: #131316;
+    color: ${({theme}) => theme.ingridientTextBox};
+    background: ${({ theme }) => theme.body};
     cursor: pointer;
     
     
@@ -25,7 +26,7 @@ const Tab = styled.button<TabType>`
         return props.status
             ? css
                 `
-                    color: #F2F2F3;
+                    color: #4C4CFF;
                     box-shadow: inset 0px -2px 0px #4C4CFF;
                     padding: 16px 40px;
                     
@@ -35,8 +36,8 @@ const Tab = styled.button<TabType>`
                 `
             : css
                 `
-                    color: #8585AD;
-                    box-shadow: inset 0px -2px 0px #2F2F37;
+                    color: {({ theme }) => theme.text};
+                    box-shadow: inset 0px -2px 0px #8484af;
                     padding: 16px 40px;
                     
                     font-weight: 400;

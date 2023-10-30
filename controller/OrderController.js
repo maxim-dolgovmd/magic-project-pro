@@ -82,6 +82,15 @@ export const statusUpdate = async (req, res) => {
         
         const orderId = req.params.id
 
+        const trustId = await OrderShema.find({_id: orderId})
+        console.log(trustId)
+
+        if (!trustId) {
+            res.status(403).json({
+                message: 'Несуществующий id'
+            })
+        }
+
         await OrderShema.updateOne(
             {
                 _id: orderId

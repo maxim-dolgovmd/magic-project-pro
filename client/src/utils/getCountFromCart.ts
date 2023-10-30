@@ -1,6 +1,7 @@
+import { IIngredient } from "../redux/slices/addCartSlice"
 
 
-export const getCountFromCart = (array: any) => {
+export const getCountFromCart = (array: IIngredient[]) => {
    const map = new Map()
 
    for (let i = 0; i < array.length; i++) {

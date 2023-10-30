@@ -10,7 +10,6 @@ export const windowAutoScroll = () => {
     if (typeof window !== 'undefined') {
         window.addEventListener('scroll', function () {
             const scrollPosition = window.scrollY;
-            console.log(scrollPosition);
             if (scrollPosition > 300) {
                 dispatch(setToScroll(false))
             } else {

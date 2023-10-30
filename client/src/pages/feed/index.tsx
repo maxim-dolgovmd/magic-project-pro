@@ -1,5 +1,5 @@
 import React from "react";
-import styled from "styled-components";
+import styled, { ThemeProvider } from "styled-components";
 import Container from "../../components/container/container";
 
 import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
@@ -17,14 +17,19 @@ import Tab from "@/components/components/tabs/tab";
 import { device } from "@/components/components/device/device";
 import { useAppDispatch } from "@/components/redux/store";
 import useDeviceHeight from "@/components/hooks/useDeviceHeight";
-import { setUser } from "@/components/redux/slices/storageSlice";
+import { ThemeModeSelect, setUser } from "@/components/redux/slices/storageSlice";
 import { useRouter } from "next/router";
 
 import { useGetMeMutation } from "@/components/services/registrationApi";
 import IconDown from '../../../public/iconDown.svg'
 import IconUp from '../../../public/iconUp.svg'
 import InputUpdateOrder from "@/components/components/input/inputUpdateOrder";
-import InputCreateOrder from "@/components/components/input/inputCreateOrder";
+import InputCreateOrder from "@/components/components/input/inputCreateIngridients";
+import { useSelector } from "react-redux";
+import { darkTheme, lightTheme } from "@/components/components/theme/theme";
+import PopUpWindow from "@/components/components/button/popUpWindow";
+import { ActiveIngrSelect, StatusOrderSelect } from "@/components/redux/slices/windowSlice";
+import InputCreateIngridients from "@/components/components/input/inputCreateIngridients";
 
 const Box = styled.div`
   padding-top: 150px;
@@ -37,7 +42,7 @@ const Box = styled.div`
 `;
 
 const Title = styled.h1`
-  color: #f2f2f3;
+  color: ${({ theme }) => theme.title};
   font-weight: 700;
   font-size: 36px;
   line-height: 40px;
@@ -76,7 +81,7 @@ const GridStatus = styled.div`
 `;
 
 const TextStatus = styled.div`
-  color: #f2f2f3;
+  color: ${({ theme }) => theme.feedStaticTitle};
   font-weight: 700;
   font-size: 24px;
   line-height: 30px;
@@ -113,6 +118,7 @@ const NumbersOfOrder = styled.div`
   font-weight: 400;
   font-size: 122px;
   line-height: 120px;
+  padding: 15px;
   text-shadow: 0px 0px 16px rgba(51, 51, 255, 0.25),
     0px 0px 8px rgba(51, 51, 255, 0.25), 0px 4px 32px rgba(51, 51, 255, 0.5);
   display: flex;
@@ -148,19 +154,6 @@ const ContainerStyle = styled(Container)`
 type TypeActiveUpdate = {
   activeUpdate: boolean
 }
-
-const BlockActive = styled.div`
-  overflow: hidden;
-  max-height: 0px;
-  transition: 0.5s ease-out;
-
-  ${(props: TypeActiveUpdate) => {
-    return props.activeUpdate && {
-      maxHeight: '270px',
-      transition: '0.5s ease-in'
-    }
-  }};
-`
 
 type TypeActive = {
   active: boolean
@@ -211,6 +204,12 @@ const BoxGrid = styled.div`
   }
 `
 
+const UpdateImage = styled.div`
+  svg path {
+    fill: ${({ theme }) => theme.menuColorImg}
+  }
+`
+
 const tsStatus = {
   'closed': 'Закрытые',
   'canceled': 'Отмененные',
@@ -245,6 +244,9 @@ export interface Order {
 
 const OrderFeet: React.FC = () => {
 
+  const themeMode = useSelector(ThemeModeSelect)
+  const activeStatusOrder = useSelector(StatusOrderSelect)
+  const activeIngridients = useSelector(ActiveIngrSelect)
   const dispatch = useAppDispatch()
   const [infoOrders, setInfoOrders] = React.useState(false)
   const [getMe] = useGetMeMutation()
@@ -274,88 +276,96 @@ const OrderFeet: React.FC = () => {
   console.log(heightMobile)
   const heightScroll = Number(heightMobile)
 
-  const ordersMap = getObjStatus(orders);
+  const ordersMap = getObjStatus(orders || []);
   console.log(ordersMap)
   const [statusActive, setStatusActive] = React.useState(tabMenu[0])
   console.log(ordersMap.get('canceled'))
 
 
   return (
-    <div>
-      <ContainerStyle>
-        <Box>
-          <Title>Лента заказов</Title>
-          <CategoriesTab>
-            {
-              tabMenu.map((obj, index) => {
-                return (
-                  <Tab
-                    key={index}
-                    status={statusActive.id === obj.id}
-                    onClick={() => setStatusActive(obj)}
-                  >
-                    {obj.category}
-                  </Tab>
-                )
-              })
-            }
-          </CategoriesTab>
-          <GridColumn>
-            {
-              statusActive.category === 'Заказы' ?
+    <ThemeProvider theme={themeMode === 'light' ? darkTheme : lightTheme}>
+      <div>
+        <ContainerStyle>
+          <Box>
+            <Title>Лента заказов</Title>
+            <CategoriesTab>
+              {
+                tabMenu.map((obj, index) => {
+                  return (
+                    <Tab
+                      key={index}
+                      status={statusActive.id === obj.id}
+                      onClick={() => setStatusActive(obj)}
+                    >
+                      {obj.category}
+                    </Tab>
+                  )
+                })
+              }
+            </CategoriesTab>
+            <GridColumn>
+              {
+                statusActive.category === 'Заказы' ?
 
-                <OverlayScrollbarsComponent>
-                  <BoxGrid heightScroll={heightScroll}>
-                    {orders?.map((obj: Order) => {
-                      console.log(obj)
-                      return (
-                        <Link key={obj._id} href={`/feed/${obj._id}`}>
-                          <CardOrder orders={obj} status={statusCategories[obj.status]} />
-                        </Link>
-                      );
-                    })}
-                  </BoxGrid>
-                </OverlayScrollbarsComponent>
-                :
-                <BoxInfo>
-                  <div>
-                    <InputUpdateOrder />
-                  </div>
-                  <div>
-                    <InputCreateOrder />
-                  </div>
-                  <InfoBlockParams>
-                    <IngridientInfo onClick={() => setInfoOrders(!infoOrders)}>
-                      <TextStatus>Общая информация</TextStatus>
-                      <div >
-                        {infoOrders ? <IconUp /> : <IconDown />}
-                      </div>
-                    </IngridientInfo>
-                    <BoxParams active={infoOrders}>
-                      <GridStatus>
-                        <StatusOrder order={ordersMap?.get('closed')} status={tsStatus['closed']} />
-                        <StatusOrder order={ordersMap?.get('canceled')} status={tsStatus['canceled']} />
-                        <StatusOrder order={ordersMap?.get('ready')} status={tsStatus['ready']} />
-                        <StatusOrder order={ordersMap?.get('handed over to courier')} status={tsStatus['handed over to courier']} />
-                      </GridStatus>
-                      <CompletedOrder>
-                        <BlockThisTime>
-                          <TextStatus>Кол-во заказов за все время:</TextStatus>
-                          <NumbersOfOrder>{orders?.length}</NumbersOfOrder>
-                        </BlockThisTime>
-                        <BlockForToday>
-                          <TextStatus>Кол-во заказов за сегодня:</TextStatus>
-                          <NumbersOfOrder>{day?.length}</NumbersOfOrder>
-                        </BlockForToday>
-                      </CompletedOrder>
-                    </BoxParams>
-                  </InfoBlockParams>
-                </BoxInfo>
-            }
-          </GridColumn>
-        </Box>
-      </ContainerStyle>
-    </div>
+                  <OverlayScrollbarsComponent>
+                    <BoxGrid heightScroll={heightScroll}>
+                      {orders?.map((obj: Order) => {
+                        console.log(obj)
+                        return (
+                          <Link key={obj._id} href={`/feed/${obj._id}`}>
+                            <CardOrder orders={obj} status={statusCategories[obj.status]} />
+                          </Link>
+                        );
+                      })}
+                    </BoxGrid>
+                  </OverlayScrollbarsComponent>
+                  :
+                  <BoxInfo>
+                    <div>
+                      <InputUpdateOrder />
+                    </div>
+                    <div>
+                      <InputCreateIngridients />
+                    </div>
+                    <InfoBlockParams>
+                      <IngridientInfo onClick={() => setInfoOrders(!infoOrders)}>
+                        <TextStatus>Общая информация</TextStatus>
+                        <UpdateImage >
+                          {infoOrders ? <IconUp /> : <IconDown />}
+                        </UpdateImage>
+                      </IngridientInfo>
+                      <BoxParams active={infoOrders}>
+                        <GridStatus>
+                          <StatusOrder order={ordersMap?.get('closed')} status={tsStatus['closed']} />
+                          <StatusOrder order={ordersMap?.get('canceled')} status={tsStatus['canceled']} />
+                          <StatusOrder order={ordersMap?.get('ready')} status={tsStatus['ready']} />
+                          <StatusOrder order={ordersMap?.get('handed over to courier')} status={tsStatus['handed over to courier']} />
+                        </GridStatus>
+                        <CompletedOrder>
+                          <BlockThisTime>
+                            <TextStatus>Кол-во заказов за все время:</TextStatus>
+                            <NumbersOfOrder>{orders?.length}</NumbersOfOrder>
+                          </BlockThisTime>
+                          <BlockForToday>
+                            <TextStatus>Кол-во заказов за сегодня:</TextStatus>
+                            <NumbersOfOrder>{day?.length}</NumbersOfOrder>
+                          </BlockForToday>
+                        </CompletedOrder>
+                      </BoxParams>
+                    </InfoBlockParams>
+                    {
+                      activeStatusOrder && <PopUpWindow text={'Статус заказа изменен'}/>
+                    }
+                    {
+                      activeIngridients && <PopUpWindow text={'Ингридиент создан'}/>
+                    }
+                  </BoxInfo>
+              }
+            </GridColumn>
+          </Box>
+        </ContainerStyle>
+      </div>
+    </ThemeProvider>
   );
 }
 

@@ -6,20 +6,25 @@ import {useDispatch } from "react-redux";
 import {setDeleteProduct} from '../../redux/slices/addCartSlice'
 import { useAppDispatch } from "@/components/redux/store";
 import { device, size } from "../device/device";
+import Price from '../../assets/icon/price.svg'
 
 const Box = styled.div`
     display: flex;
     gap: 8px;
     justify-content: center;
     align-items: center;
-    color: #F2F2F3;
+    color: ${({theme}) => theme.ingridientTextBox};
     font-weight: 400;
     font-size: 20px;
     line-height: 18px;
     padding-right: 8px;
+
+    svg path {
+        fill: ${({theme}) => theme.priceImg};
+    }
 `
 
-const NextImage = styled(Image)`
+const PriceImage = styled(Price)`
     @media ${device.mobileL} {
         display: none;
     }
@@ -41,7 +46,7 @@ const BoxName = styled.div`
     font-weight: 400;
     font-size: 16px;
     line-height: 24px;
-    color: #F2F2F3;
+    color: ${({theme}) => theme.ingridientTextBox};
     padding-right: 8px;
     hyphens: manual;
 
@@ -87,7 +92,7 @@ const IngridientBurger: React.FC<IngridientTypeBurgers> = ({
             <BoxName>{nameItem}</BoxName>
             <Box>
                 <div>{price}</div>
-                <NextImage src='/price.svg' width={24} height={24} alt="PriceSvg" />
+                <PriceImage />
             </Box>
             <BoxImage onClick={() => deleteIngr(index)}>
                 <Image src='/block.svg' width={24} height={24} alt="Block" />

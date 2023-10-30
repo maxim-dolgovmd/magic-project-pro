@@ -4,11 +4,13 @@ import styled from "styled-components";
 import Image from "next/image";
 import Check from "../../../assets/icon/done.svg";
 
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setActiveOrder } from "../../../redux/slices/addCartSlice";
 import Modal from "../modal";
 import { useAppDispatch } from "@/components/redux/store";
 import { device } from "../../device/device";
+import IconGood from '../../../assets/icon/good.svg'
+import { ThemeModeSelect } from "@/components/redux/slices/storageSlice";
 
 const BlockOrder = styled.div`
   display: flex;
@@ -71,6 +73,8 @@ const BlockContent = styled.div`
 `
 
 const ModalOrder: React.FC = () => {
+  const themeMode = useSelector(ThemeModeSelect)
+  console.log(themeMode)
   const dispatch = useAppDispatch();
   function getRandomInt(min: number, max: number) {
     min = Math.ceil(min);
@@ -94,7 +98,7 @@ const ModalOrder: React.FC = () => {
         {/* <Identificator>{getRandomInt(111111, 999999)}</Identificator>
         <IdentificatorTitle>идентификатор заказа</IdentificatorTitle> */}
         <BlockContent>
-          <Check />
+          {themeMode === 'dark' ? <IconGood /> : <Check />}
           <Content>
             <div>Ваш заказ начали готовить</div>
             <div>Дождитесь готовности на орбитальной станции</div>

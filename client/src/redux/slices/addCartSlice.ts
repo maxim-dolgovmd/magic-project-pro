@@ -27,6 +27,11 @@ export interface Order {
     ingredients: IIngredient[];
 }
 
+export interface CardOrderType {
+    orders: Order
+    status: string
+}
+
 export type OrderIngridients = {
     category: string,
     _id: number,
@@ -138,7 +143,7 @@ const cartSlice = createSlice({
             state.activeOrder = action.payload
         },
 
-        setProductInfo(state, action: PayloadAction<any>) {
+        setProductInfo(state, action: PayloadAction<OrderIngridients>) {
             state.product = action.payload
         },
 

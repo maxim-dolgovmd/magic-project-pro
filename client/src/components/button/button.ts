@@ -8,6 +8,7 @@ type ButtonProps = {
 const Button = styled.button`
     display: flex;
     align-items: center;
+    cursor: pointer;
     justify-content: center;
     border-radius: 64px;
     background: linear-gradient(63.18deg, #801AB3 0%, #4C4CFF 100%);
@@ -56,8 +57,8 @@ const Button = styled.button`
                     linear-gradient(63.18deg, #801AB3 0%, #4C4CFF 100%);
     };
     :disabled {
-        background: #3A3A55;
-        color: #8585AD;
+        background: ${({ theme }) => theme.disabledButton};
+        color: ${({ theme }) => theme.disabledColor};
     };
 `
 

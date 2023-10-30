@@ -1,12 +1,11 @@
 import React from "react";
-import styled from "styled-components";
-import Image from "next/image";
-// import {Reorder} from 'framer-motion';
+import styled, { ThemeProvider } from "styled-components";
 
-import CardBurger from "../components/objectCart/cardBurger";
 import Tab from "../components/tabs/tab";
 import Ingridient from "../components/ingridient/ingridient";
+import PriceImage from '../assets/icon/price.svg'
 import Button from "../components/button/button";
+import IngredientBurger from '../components/ingridient/ingridientBurger'
 import ModalWindow from "../components/modal/modalWindow/modalWindow";
 import ModalOrder from "../components/modal/modalOrders/modalOrders";
 import Container from "../components/container/container";
@@ -18,7 +17,7 @@ import { useGetIngridientQuery } from '../services/ingridientsApi'
 
 import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
 
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 
 import useDeviceDetect from "../hooks/useDeviceDetect";
 import useDeviceHeight from "../hooks/useDeviceHeight";
@@ -30,15 +29,43 @@ import {
     setDeleteOrder,
     AddCartSelect,
     IIngredient,
-    setCartActive,
 } from "../redux/slices/addCartSlice";
 import { useAppDispatch } from "../redux/store";
-import CardBurgerMobile from "./cart-order";
 import { useGetCategoryQuery } from "../services/categoriesApi";
 import { useGetMeMutation } from "../services/registrationApi";
-import { StorageSelect, setUser } from "../redux/slices/storageSlice";
+import { StorageSelect, ThemeModeSelect, setUser } from "../redux/slices/storageSlice";
 import SkeletonCategory from "../components/skeleton/skeletonCaterory";
-import axios from "axios";
+import { darkTheme, lightTheme } from "../components/theme/theme";
+
+type heightCartType = {
+    heightScrollCart: number
+}
+
+type categoryType = {
+    id: number,
+    category: string,
+}
+
+type heightType = {
+    heightScrollIngr: number
+}
+
+type BorderType = {
+    borderFirst: boolean,
+    borderLast: boolean,
+}
+
+type DataGetMe = {
+    _id: string
+    email: string
+    username: string
+    createdAt: string
+    updatedAt: string
+}
+
+interface GetMeType {
+    data: DataGetMe
+}
 
 const Box = styled.div`
     display: flex;
@@ -58,7 +85,7 @@ const Title = styled.h1`
   font-weight: 700;
   font-size: 36px;
   line-height: 40px;
-  color: #f2f2f3;
+  color: ${({ theme }) => theme.text};
   padding: 0 0 20px 0;
 
   @media ${device.mobileL} {
@@ -106,10 +133,6 @@ const GridColumns = styled.div`
     }
 `;
 
-type heightCartType = {
-    heightScrollCart: number
-}
-
 const GridBurger = styled.div`
     display: flex;
     flex-direction: column;
@@ -128,7 +151,7 @@ const GridBurger = styled.div`
 `;
 
 const TitleBlock = styled.div`
-  color: #f2f2f3;
+  color: ${({ theme }) => theme.text};
   font-weight: 700;
   font-size: 24px;
   line-height: 30px;
@@ -144,7 +167,6 @@ const BoxOrder = styled.div`
   align-items: center;
   gap: 40px;
   justify-content: flex-end;
-  /* padding-right: 20px; */
 
   @media ${device.laptop} {
     padding: 50px 20px
@@ -160,16 +182,18 @@ const BoxSum = styled.div`
     font-size: 48px;
     font-weight: 400;
     line-height: 36px;
-    color: #f2f2f3;
   }
+
+  svg path {
+        fill: ${({ theme }) => theme.text};
+    }
 `;
 
 const HeaderCard = styled.div`
   font-weight: 700;
   font-size: 36px;
   line-height: 40px;
-  color: #f2f2f3;
-  /* padding: 0 0 20px 20px; */
+  color: ${({ theme }) => theme.text};
   padding: 0 0 20px 0px;
 `;
 
@@ -183,8 +207,7 @@ const ColumnsCart = styled.div`
 `
 
 const ViewOrder = styled.div`
-    background-color: #1C1C21;
-    /* display: flex; */
+    background-color: ${({ theme }) => theme.backgroundWrapper};
     position: fixed;
     bottom: 0;
     z-index: 20;
@@ -199,11 +222,14 @@ const ViewSum = styled.div`
     gap: 8px;
     justify-content: center;
     align-items: center;
-    color: #F2F2F3;
     font-weight: 400;
     font-size: 20px;
     line-height: 18px;
     padding-right: 8px;
+
+    svg path {
+        fill: '#fff';
+    }
 `
 
 const BoxView = styled.div`
@@ -213,21 +239,11 @@ const BoxView = styled.div`
     gap: 16px;
 `
 
-type categoryType = {
-    id: number,
-    category: string,
-}
-
 const ContentContainer = styled(Container)`
     z-index: 3;
-    /* display: flex; */
     width: 100%;
     flex: 1 1 auto;
 `
-
-type heightType = {
-    heightScrollIngr: number
-}
 
 const ScrollHeight = styled.div`
     height: auto;
@@ -241,9 +257,52 @@ const ScrollHeight = styled.div`
     }
 `
 
+const BoxBorder = styled.div`
+    display: flex;
+    align-items: center;
+    background: ${({ theme }) => theme.backgroundCart};
+    border-radius: 40px;
+    padding: 16px 24px;
+    gap: 20px;
+
+    @media (min-width: ${size.tablet}) {
+        justify-content: space-around;
+        gap: 0;
+    }
+    
+
+    ${(props: BorderType) => {
+        if (props.borderFirst) {
+            return props.borderFirst && {
+            borderRadius: '88px 88px 40px 40px'
+        }
+        }
+        if (props.borderLast) {
+            return props.borderLast && {
+            borderRadius: '40px 40px 88px 88px'
+        }
+        }
+    }};
+
+`
+
+const SumProductStyles = styled.div`
+    color: ${({ theme }) => theme.ingridientTextBox};
+`
+
+const SumModal = styled.div`
+    color: #fff;
+`
+
+const EmptyCart = styled.div`
+    color: ${({ theme }) => theme.ingridientTextBox};
+`
+
 const Constructor: React.FC = () => {
 
-    const isMobile = useDeviceDetect()
+    const themeMode = useSelector(ThemeModeSelect)
+    console.log(themeMode)
+    
     const dispatch = useAppDispatch();
     const { heightMobile } = useDeviceHeight()
     const heightScrollIngr = Number(heightMobile) - 310
@@ -251,12 +310,10 @@ const Constructor: React.FC = () => {
     const { user } = useSelector(StorageSelect);
     const [getMe] = useGetMeMutation()
 
-    console.log(user)
-    console.log(heightScrollIngr)
-
     React.useEffect(() => {
         const fetchMe = async () => {
             const { data }: any = await getMe()
+            console.log(data)
             if (Object.keys(data || '').length > 0) {
                 dispatch(setUser(data?.email))
             }
@@ -268,15 +325,13 @@ const Constructor: React.FC = () => {
 
     const { data: categoriesData, isLoading: loadingCategory } = useGetCategoryQuery()
     const { data: arrayProduct, isLoading: Loading } = useGetIngridientQuery()
-    // const categories = useGetIngridientQuery('categories')
-    const [createOrder, { isLoading, isSuccess, isError }] = usePostOrderMutation()
-    // const orderGet = useGetOrderQuery({limit: 12, offset: 0})
+    const [createOrder] = usePostOrderMutation()
 
+    console.log(categoriesData)
     const [filterIngr, setFilterIngr] = React.useState({
         id: Number(1),
         category: "Все",
     });
-    console.log(categoriesData)
 
     const { sumProduct, addProduct, activeIngr, activeOrder } = useSelector(AddCartSelect);
 
@@ -286,11 +341,11 @@ const Constructor: React.FC = () => {
         return getCountFromCart(addProduct).get(id)
     }
 
+    console.log(addProduct, sumProduct)
     const isProduct = {
         addProduct,
         sumProduct
     }
-    console.log(arrayProduct)
 
     const createOrderFunc = () => {
         if (!user) {
@@ -303,167 +358,156 @@ const Constructor: React.FC = () => {
     }
 
 
-    const arrIngrReduce = arrayProduct?.reduce((acc: any, ingredient: IIngredient, index: number) => {
+    const arrIngrReduce = arrayProduct?.reduce((acc: IIngredient[], ingredient: IIngredient, index: number) => {
         if (filterIngr?.category === 'Все') {
             acc?.push(ingredient)
         }
         if (ingredient?.category === filterIngr?.category) {
             acc?.push(ingredient)
         }
-        console.log(index)
         return acc
     }, [])
 
-    console.log(arrIngrReduce)
-
-
-    const promise = new Promise((resolve, reject) => {
-        setTimeout(() => {
-            console.log('Preparing data...')
-            const data = {
-                modified: true
-            }
-            resolve(data)
-        }, 2000);
-    })
-
-    promise.then((data) => {
-        return new Promise((resolve, reject) => {
-            setTimeout(() => {
-                console.log('Promise resolded')
-                resolve(data)
-                // reject(data)
-            }, 1500);
-        })
-    })
-    .then((clientData) => {
-        console.log('Data received', clientData)
-    })
-    .catch((err) => console.error('Error', err))
+    
 
     return (
-        <Box>
-            <ContentContainer>
-                <TopMargin>
-                    <Title>Соберите бургер</Title>
-                    <GridColumns>
-                        <ColumnsIngr>
-                            <GridTab>
-                                {
-                                    loadingCategory ? (
-                                        <SkeletonCategory />
-                                    ) : (
-                                        [...categoriesData?.categories]
-                                            ?.sort((a: categoryType, b: categoryType) => a.id - b.id)
-                                            ?.map((obj: categoryType, index: any) => {
+        <ThemeProvider theme={ themeMode === 'light' ? darkTheme : lightTheme}>
+            <Box>
+                <ContentContainer>
+                    <TopMargin>
+                        <Title>Соберите бургер</Title>
+                        <GridColumns>
+                            <ColumnsIngr>
+                                <GridTab>
+                                    {
+                                        loadingCategory ? (
+                                            <SkeletonCategory />
+                                        ) : (
+                                            [...categoriesData?.categories]
+                                                ?.sort((a: categoryType, b: categoryType) => a.id - b.id)
+                                                ?.map((obj: categoryType, index: number) => {
+                                                    return (
+                                                        <Tab
+                                                            key={index}
+                                                            status={filterIngr?.id === obj?.id}
+                                                            onClick={() => {
+                                                                setFilterIngr(obj);
+                                                            }}
+                                                        >
+                                                            {obj.category}
+                                                        </Tab>
+                                                    )
+                                                })
+                                        )
+                                    }
+                                </GridTab>
+                                <OverlayScrollbarsComponent>
+                                    <ScrollHeight heightScrollIngr={heightScrollIngr}>
+                                        <TitleBlock>{filterIngr?.category}</TitleBlock>
+                                        <GridMenu>
+                                            {
+                                                Loading ? (
+                                                    Array(12)
+                                                        .fill(0)
+                                                        .map((_, index) => <LoadingSkeleton key={index} />)
+                                                ) : (
+                                                    [...arrIngrReduce]
+                                                        ?.sort((a: IIngredient, b: IIngredient) => a.category.localeCompare(b.category))
+                                                        ?.map((ingr: IIngredient) => {
+                                                            return (
+                                                                <Ingridient
+                                                                    key={ingr?._id}
+                                                                    nameItem={ingr?.name}
+                                                                    photo={`http://localhost:5555${ingr?.largePhotoUrl}`}
+                                                                    price={ingr?.price}
+                                                                    objIngredient={ingr}
+                                                                    hasBunds={hasBunds}
+                                                                    addMap={addMap(ingr?._id)}
+                                                                />
+                                                            )
+                                                        })
+                                                )
+                                            }
+
+                                        </GridMenu>
+                                    </ScrollHeight>
+                                </OverlayScrollbarsComponent>
+                            </ColumnsIngr>
+                            <ColumnsCart>
+                                <HeaderCard>Корзина</HeaderCard>
+                                <OverlayScrollbarsComponent>
+                                    <GridBurger heightScrollCart={heightScrollCart}>
+                                        {addProduct?.length > 0 ? (
+                                            // <CardBurger addProduct={addProduct} />
+                                            addProduct.map((obj, index) => {
                                                 console.log(obj)
                                                 return (
-                                                    <Tab
-                                                        key={index}
-                                                        status={filterIngr?.id === obj?.id}
-                                                        onClick={() => {
-                                                            setFilterIngr(obj);
-                                                        }}
+                                                
+                                                    <BoxBorder 
+                                                        borderFirst={index===0 && obj.category === 'Булки'} 
+                                                        borderLast={index === addProduct.length-1 && obj.category === 'Булки'}
                                                     >
-                                                        {obj.category}
-                                                    </Tab>
+                                                        <IngredientBurger 
+                                                            key={obj._id}
+                                                            photo={obj?.mobilePhotoUrl}
+                                                            nameItem={obj?.name}
+                                                            price={obj?.price}
+                                                            index={index}
+                                                        /> 
+                                                    </BoxBorder>
                                                 )
-                                            })
-                                    )
-                                }
-                            </GridTab>
-                            <OverlayScrollbarsComponent>
-                                <ScrollHeight heightScrollIngr={heightScrollIngr}>
-                                    <TitleBlock>{filterIngr?.category}</TitleBlock>
-                                    <GridMenu>
-                                        {
-                                            Loading ? (
-                                                Array(12)
-                                                    .fill(0)
-                                                    .map((_, index) => <LoadingSkeleton key={index} />)
-                                            ) : (
-                                                [...arrIngrReduce]
-                                                    ?.sort((a: IIngredient, b: IIngredient) => a.category.localeCompare(b.category))
-                                                    ?.map((ingr: IIngredient) => {
-                                                        return (
-                                                            // <LoadingSkeleton />
-                                                            <Ingridient
-                                                                key={ingr?._id}
-                                                                nameItem={ingr?.name}
-                                                                photo={`http://localhost:5555${ingr?.largePhotoUrl}`}
-                                                                price={ingr?.price}
-                                                                objIngredient={ingr}
-                                                                hasBunds={hasBunds}
-                                                                addMap={addMap(ingr?._id)}
-                                                            />
-                                                        )
-                                                    })
-                                            )
-                                        }
-
-                                    </GridMenu>
-                                </ScrollHeight>
-                            </OverlayScrollbarsComponent>
-                        </ColumnsIngr>
-                        <ColumnsCart>
-                            <HeaderCard>Корзина</HeaderCard>
-                            <OverlayScrollbarsComponent>
-                                <GridBurger heightScrollCart={heightScrollCart}>
-                                    {addProduct?.length > 0 ? (
-                                        <CardBurger addProduct={addProduct} />
-                                    ) : (
-                                        <div>Ваша корзина пуста</div>
-                                    )}
-                                </GridBurger>
-                            </OverlayScrollbarsComponent>
-                            <BoxOrder>
-                                <BoxSum>
-                                    <div>{sumProduct}</div>
-                                    <Image src="/price.svg" width={24} height={24} alt="PriceSvg" />
-                                </BoxSum>
-                                <Button
-                                    size="large"
-                                    onClick={createOrderFunc}
-                                    disabled={addProduct?.length === 0}
-                                >
-                                    Оформить заказ
-                                </Button>
-                            </BoxOrder>
-                        </ColumnsCart>
-                        {activeIngr && (
-                            <div>
-                                <ModalWindow />
-                            </div>
-                        )}
-                        {activeOrder && (
-                            <div >
-                                <ModalOrder />
-                            </div>
-                        )}
-                        {/* {cartActive && router.push('/cart-order')} */}
-                    </GridColumns>
-                </TopMargin >
-            </ContentContainer >
-            <ViewOrder>
-                <BoxView>
-                    <ViewSum>
-                        <div>{sumProduct}</div>
-                        <Image src='/price.svg' width={24} height={24} alt="PriceSvg" />
-                    </ViewSum>
-                    <Button
-                        size="small"
-                        onClick={() => {
-                            router.push('/cart-order')
-                            // dispatch(setDeleteOrder())
-                            // createOrder(isProduct)
-                        }}
-                        disabled={addProduct?.length === 0}
-                    >
-                        Смотреть заказ
-                    </Button>
-                </BoxView>
-            </ViewOrder>
-        </Box>
+                                            }) 
+                                        ) : (
+                                            <EmptyCart>Ваша корзина пуста</EmptyCart>
+                                        )}
+                                    </GridBurger>
+                                </OverlayScrollbarsComponent>
+                                <BoxOrder>
+                                    <BoxSum>
+                                        <SumProductStyles>{sumProduct}</SumProductStyles>
+                                        <PriceImage />
+                                    </BoxSum>
+                                    <Button
+                                        size="large"
+                                        onClick={createOrderFunc}
+                                        disabled={addProduct?.length === 0}
+                                    >
+                                        Оформить заказ
+                                    </Button>
+                                </BoxOrder>
+                            </ColumnsCart>
+                            {activeIngr && (
+                                <div>
+                                    <ModalWindow />
+                                </div>
+                            )}
+                            {activeOrder && (
+                                <div >
+                                    <ModalOrder />
+                                </div>
+                            )}
+                        </GridColumns>
+                    </TopMargin >
+                </ContentContainer >
+                <ViewOrder>
+                    <BoxView>
+                        <ViewSum>
+                            <SumModal>{sumProduct}</SumModal>
+                            <PriceImage />
+                        </ViewSum>
+                        <Button
+                            size="small"
+                            onClick={() => {
+                                router.push('/cart-order')
+                            }}
+                            disabled={addProduct?.length === 0}
+                        >
+                            Смотреть заказ
+                        </Button>
+                    </BoxView>
+                </ViewOrder>
+            </Box>
+        </ThemeProvider>
     );
 };
 

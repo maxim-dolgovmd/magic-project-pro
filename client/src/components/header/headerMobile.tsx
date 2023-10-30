@@ -28,6 +28,8 @@ const BoxMobile = styled.div`
     justify-content: space-between;
     align-items: center;
     padding: 16px 0;
+    min-height: 87px;
+    /* background: ${({ theme }) => theme.text}; */
     /* z-index: 2010; */
 `
 
@@ -82,12 +84,14 @@ const MenuBtn = styled.button`
     }  
 `
 
+
 const TitleMenu = styled(Link)`
     font-weight: 700;
     font-size: 28px;
     font-family: 'JetBrains Mono';
     line-height: 32px;
     padding: 8px 0;
+    color: ${({ theme }) => theme.colorOrder};
 `
 
 const HeaderMobile = () => {

@@ -4,6 +4,7 @@ import styled from "styled-components";
 
 import Image from "next/image";
 import ButtonText from "../button/buttonText";
+import Price from '../../assets/icon/price.svg'
 import fruitMobile from '../../../public/illustration/fruit/fruitMobile.png'
 
 import { useDispatch } from "react-redux";
@@ -33,10 +34,14 @@ const Box = styled.div`
   gap: 8px;
   justify-content: center;
   align-items: center;
-  color: #f2f2f3;
+  color: ${({ theme }) => theme.ingridientTextBox};
   font-weight: 400;
   font-size: 20px;
   line-height: 18px;
+
+  svg path {
+        fill: ${({ theme }) => theme.priceImg}
+    }
 `;
 
 const BoxImage = styled.div`
@@ -67,7 +72,7 @@ const BoxName = styled.div`
   font-size: 14px;
   line-height: 20px;
   text-align: center;
-  color: #f2f2f3;
+  color: ${({ theme }) => theme.ingridientTextBox};
   max-width: 100vp;
 `;
 
@@ -113,7 +118,7 @@ const IngridientMobile: React.FC<IngredientPropsType> = ({ingredient}) => {
                 </BoxImage>
                 <Box>
                     <div>{ingredient?.price}</div>
-                    <Image src="/price.svg" width={24} height={24} alt="PriceSvg" />
+                    <Price/>
                 </Box>
                 <BoxName>{ingredient?.nameItem}</BoxName>
                 <ButtonText onClick={addProductCart} size='small'>Добавить</ButtonText>

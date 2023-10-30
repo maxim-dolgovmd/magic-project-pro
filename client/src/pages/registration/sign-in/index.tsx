@@ -34,7 +34,7 @@ const ColumnSignIn = styled.div`
 `
 
 const Title = styled.div`
-    color: #F2F2F3;
+    /* color: #F2F2F3; */
     font-weight: 700;
     font-size: 24px;
     line-height: 30px;
@@ -132,7 +132,7 @@ const SignIn: React.FC = () => {
                             },})}}
                             valueField={watch('password')}
                         />
-                        <BlockButton>
+                        <BlockButton >
                             <ButtonComponent onClick={OnSubmit} size='medium'>Войти</ButtonComponent>
                         </BlockButton>
                     </ColumnSignIn>

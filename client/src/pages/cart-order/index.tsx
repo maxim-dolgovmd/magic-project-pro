@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
-import styled from 'styled-components'
-import Link from "next/link";
+import React from "react";
+import styled, { ThemeProvider } from 'styled-components'
 
 import Close from '../../../public/closeIcon.svg'
 import { useSelector } from "react-redux";
@@ -16,12 +15,12 @@ import {
     setCartActive,
 } from "../../redux/slices/addCartSlice";
 import { usePostOrderMutation } from "@/components/services/ordersApi";
-import CardBurger from "@/components/components/objectCart/cardBurger";
 import IngridientBurger from "@/components/components/ingridient/ingridientBurger";
 import { device } from "@/components/components/device/device";
 import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
 import useDeviceHeight from "@/components/utils/useDeviceHeight";
-import { StorageSelect } from "@/components/redux/slices/storageSlice";
+import { StorageSelect, ThemeModeSelect } from "@/components/redux/slices/storageSlice";
+import { darkTheme, lightTheme } from "@/components/components/theme/theme";
 
 
 const Window = styled.div`
@@ -30,18 +29,12 @@ const Window = styled.div`
     left: 0;
     width: 100%;
     height: 100%;
-    background: #131316;
     display: flex;
-    /* padding: 0px 15px; */
     z-index: 301;
-
-    /* @media ${device.mobileL} {
-        padding: 0px;
-    } */
 `
 
 const Block = styled.div`
-    /* margin: 32px 0 16px 0; */
+    background: ${({ theme }) => theme.body};
     width: 100%;
 `
 
@@ -51,9 +44,9 @@ const BoxHeader = styled.div`
     justify-content: space-between;
     align-items: center;
 
-    /* @media ${device.mobileL} {
-        padding: 16px;
-    } */
+    >div svg path {
+        fill: ${({ theme }) => theme.titleOrder}
+    }
 `
 
 const TitleMenu = styled.div`
@@ -62,6 +55,7 @@ const TitleMenu = styled.div`
     font-family: 'JetBrains Mono';
     line-height: 32px;
     padding: 8px 0;
+    color: ${({theme}) => theme.titleOrder};
 `
 
 const ViewOrder = styled.div`
@@ -69,7 +63,7 @@ const ViewOrder = styled.div`
     bottom: 0;
     z-index: 20;
     width: 100%;
-    background-color: #1C1C21;
+    background-color: ${({ theme }) => theme.backgroundWrapper};
 `
 
 const BoxOrder = styled.div`
@@ -89,7 +83,7 @@ const BoxSum = styled.div`
     font-size: 20px;
     font-weight: 400;
     line-height: 18px;
-    color: #f2f2f3;
+    color: ${({theme}) => theme.colorOrder};
   }
 `;
 
@@ -106,28 +100,21 @@ const BurgerMobile = styled.div`
 
 const Band = styled.div`
     height: 1px;
-    /* display: flex;
-    flex-direction: column; */
     width: 100%;
     background-color: white;
 `
-type ScrollHeight = {
-    scroll: number,
-}
-const Scroll = styled.div`
-    height: 400px;
 
-    
+const CloseImg = styled(Close)`
+    cursor: pointer;
 `
-
 
 const CardBurgerMobile = () => {
 
-    const { sumProduct, addProduct, activeIngr, activeOrder, cartActive } = useSelector(AddCartSelect);
+    const themeMode = useSelector(ThemeModeSelect)
+    const { sumProduct, addProduct } = useSelector(AddCartSelect);
 
-    const [createOrder, { isLoading, isSuccess, isError }] = usePostOrderMutation()
+    const [createOrder] = usePostOrderMutation()
 
-    const { isMenuClicked } = useSelector(AddCartSelect)
     const {user} = useSelector(StorageSelect)
     const router = useRouter()
     const dispatch = useAppDispatch()
@@ -140,10 +127,16 @@ const CardBurgerMobile = () => {
     const ScrollMobile = Number(heightMobile) - 152
     console.log(ScrollMobile)
 
+    const closeOrderFunc = () => {
+        router.push('/')
+        dispatch(setCartActive(false))
+    }
+
     const createOrderFunc = () => {
         if (!user) {
             alert('Для создания заказа необходимо авторизоваться')
         } else {
+            closeOrderFunc()
             dispatch(setActiveOrder(true))
             dispatch(setDeleteOrder())
             createOrder(isProduct)
@@ -152,17 +145,17 @@ const CardBurgerMobile = () => {
 
 
     return (
+        <ThemeProvider theme={ themeMode === 'light' ? darkTheme : lightTheme}>
         <Window>
             <Block>
                 <div>
                     <BoxHeader>
                         <TitleMenu>Заказ</TitleMenu>
-                        <div onClick={() => { router.push('/'), dispatch(setCartActive(false)) }}>
-                            <Close />
+                        <div onClick={closeOrderFunc}>
+                            <CloseImg />
                         </div>
                     </BoxHeader>
                     <OverlayScrollbarsComponent>
-                    {/* style={{height: `${String(ScrollMobile)}px`}} */}
                         <div style={{height: `${String(ScrollMobile)}px`}}>
                             {addProduct.length > 0 ?
                                 addProduct.map((obj, index) => {
@@ -204,6 +197,7 @@ const CardBurgerMobile = () => {
                 </div>
             </Block>
         </Window>
+        </ThemeProvider>
     )
 }
 

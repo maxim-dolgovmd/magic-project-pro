@@ -3,6 +3,16 @@ import { IIngredient } from '../redux/slices/addCartSlice'
 
 const API_URL = 'http://localhost:5555'
 
+type CreateQueryType = {
+    largePhotoUrl: string,
+    normalPhotoUrl: string,
+    mobilePhotoUrl: string,
+    previewPhotoUrl: string,
+    price: number,
+    name: string,
+    category: string,
+}
+
 export const ingridientApi: any = createApi({
     reducerPath: 'ingridientApi',
     baseQuery: fetchBaseQuery({
@@ -18,7 +28,7 @@ export const ingridientApi: any = createApi({
             },
         }),
 
-        createIngridient: builder.mutation<any, any>({
+        createIngridient: builder.mutation<void, CreateQueryType>({
             query: ({largePhotoUrl, normalPhotoUrl, mobilePhotoUrl, previewPhotoUrl, price, name, category}) => {
                 return {
                     url: '/ingridients',

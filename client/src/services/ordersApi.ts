@@ -1,21 +1,13 @@
 import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react'
 import { IIngredient, Order } from '../redux/slices/addCartSlice'
 
-interface PostMutationType {
-    role: string,
-    addProduct: IIngredient[],
+interface OrderQueryType {
+    sumProduct: number
+    addProduct: IIngredient[]
 }
 
-interface GetQueryType {
-    limit: string,
-    offset: string,
-    role: string,
-}
-
-interface ParamsDataType {
-    offset: string,
-    orders: Order[],
-    limit: string,
+type GetOrderOneQuery = {
+    id: string
 }
 
 const API_URL = 'http://localhost:5555'
@@ -27,7 +19,7 @@ export const ordersApi = createApi({
     }),
     tagTypes: ['User'],
     endpoints: (builder) => ({
-        postOrder: builder.mutation<null, any>({
+        postOrder: builder.mutation<void, OrderQueryType>({
             query: ({sumProduct, addProduct}) => {
                 return {
                     url: '/order',
@@ -46,7 +38,7 @@ export const ordersApi = createApi({
             invalidatesTags: ['User'],
         }),
 
-        getOrder: builder.query<any, void>({
+        getOrder: builder.query<Order[], void>({
             query: () => {
                 return {
                     url: `/order/user`,
@@ -59,19 +51,16 @@ export const ordersApi = createApi({
             providesTags: ['User'],
         }),
         
-        getAdminOrder: builder.query<any, void>({
+        getAdminOrder: builder.query<Order[], void>({
             query: () => {
                 return {
                     url: `/order`,
                     method: 'GET',
-                    // headers: {
-                    //     Authorization: (window.localStorage.getItem('token') as any)
-                    // },
                 }
             },
         }),
 
-        getOneOrder: builder.query<any, any>({
+        getOneOrder: builder.query<Order, GetOrderOneQuery>({
             query: ({id}) => {
                 return {
                     url: `/order/${id}`,
@@ -84,9 +73,10 @@ export const ordersApi = createApi({
         }),
 
         updateStatusId: builder.mutation({
-            query: ({orderId, statusId}) => {
+            query: ({data, statusId}) => {
+                console.log(data, statusId)
                 return {
-                    url: `/order/${orderId}`,
+                    url: `/order/${data}`,
                     method: 'PATCH',
                     body: {
                         status: statusId

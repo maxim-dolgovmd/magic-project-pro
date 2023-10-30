@@ -13,7 +13,7 @@ const BoxScroll = styled.div`
     position: fixed;
     width: 80px;
     bottom: 100px;
-    right: 100px;
+    right: 50px;
     z-index: 300;
     opacity: 0.3;
     cursor: pointer;

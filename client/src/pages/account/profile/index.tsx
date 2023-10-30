@@ -1,5 +1,5 @@
 import React from "react";
-import styled from "styled-components";
+import styled, { ThemeProvider } from "styled-components";
 import Container from "../../../components/container/container";
 import BaseInput from "../../../components/input/baseInput";
 import { useForm } from "react-hook-form";
@@ -8,9 +8,12 @@ import Link from "next/link";
 import { device, size } from "@/components/components/device/device";
 import { useRouter } from "next/router";
 import { useDispatch, useSelector } from "react-redux";
-import { StorageSelect, setUser } from "@/components/redux/slices/storageSlice";
+import { StorageSelect, ThemeModeSelect, setUser } from "@/components/redux/slices/storageSlice";
 import { useAuthUpdateMutation, useGetMeMutation } from "@/components/services/registrationApi";
 import { TokenGetMeFunc } from "@/components/utils/tokenGetMeFunc";
+import { darkTheme, lightTheme } from "@/components/components/theme/theme";
+import { UpdateActiveSelect, setUpdateActive } from "@/components/redux/slices/windowSlice";
+import PopUpWindow from "@/components/components/button/popUpWindow";
 
 
 const Box = styled.div`
@@ -32,7 +35,7 @@ const ButtonBox = styled.div`
 `;
 
 type ActiveButton = {
-  active?: any
+  active?: boolean
 }
 
 const Button = styled.div`
@@ -41,19 +44,19 @@ const Button = styled.div`
   font-size: 24px;
   line-height: 30px;
   align-items: center;
-  background: #131316;
+  background: ${({ theme }) => theme.buttonProfile};
   padding: 15px 0 15px 0;
   color: #8585ad;
 
   span:hover {
     cursor: pointer;
-    color: #f2f2f3;
+    color: ${({theme}) => theme.buttonHoverProfile};
   }
 
-  ${(props: ActiveButton) => {
+    ${(props: ActiveButton) => {
     return (
       props.active && {
-        color: "#F2F2F3",
+        color: '#64646e'
       }
     );
   }}
@@ -72,7 +75,7 @@ const Title = styled.div`
   line-height: 24px;
 
   span:hover {
-    color: #f2f2f3;
+    color: ${({theme}) => theme.buttonHoverProfile};
   }
 `
 
@@ -111,10 +114,13 @@ interface DataType {
 }
 
 const PersonalArea:React.FC = () => {
+
+  const themeMode = useSelector(ThemeModeSelect)
+  const updateActive = useSelector(UpdateActiveSelect)
   const dispatch = useDispatch()
   const [authUpdate] = useAuthUpdateMutation()
   const [activeButton, setActiveButton] = React.useState(false)
-  const {register,watch, handleSubmit, formState: {errors}, setValue} = useForm<DataType>({mode: 'onBlur'})
+  const {register,watch, handleSubmit, reset, formState: {errors}, setValue} = useForm<DataType>({mode: 'onBlur'})
   const router = useRouter()
   const {user} = useSelector(StorageSelect)
   const [getMe] = useGetMeMutation()
@@ -127,12 +133,20 @@ const PersonalArea:React.FC = () => {
 
   TokenGetMeFunc()
   
-  const onSubmit = handleSubmit((data) => {
+  const onSubmit = async (data: any) => {
     if (window.confirm('Вы действительно хотите обновить данные')) {
-      authUpdate(data)
-      console.log(data)
+      const {data: res}: any = await authUpdate(data)
+
+      if (Object.keys(res || []).length > 0) {
+        dispatch(setUpdateActive(true))
+        setTimeout(() => {
+          dispatch(setUpdateActive(false))
+        }, 3000);
+      }
+
+      reset()
     }
-  })
+  }
 
   const exitTheAccount = () => {
     setActiveButton(true)
@@ -144,79 +158,77 @@ const PersonalArea:React.FC = () => {
   }
 
   return (
-    <Container>
-      <Box>
-        <TitleCategory>
-          Профиль
-        </TitleCategory>
-        <ContentCategory>
-          <ButtonBox>
-            <Button active={!activeButton} onClick={() => setActiveButton(false)}>
-              <span>Профиль </span>
-            </Button>
-              <Button>
-                <Link href={'/account/order-history'}>
-                  <span>История заказов </span>
-                </Link>
+    <ThemeProvider theme={themeMode === 'light' ? darkTheme : lightTheme}>
+      <Container>
+        <Box>
+          <TitleCategory>
+            Профиль
+          </TitleCategory>
+          <ContentCategory>
+            <ButtonBox>
+              <Button active={!activeButton} onClick={() => setActiveButton(false)}>
+                <span>Профиль </span>
               </Button>
-            <Button active={activeButton} onClick={exitTheAccount}>
-              <span>Выход </span>
-            </Button>
-          </ButtonBox>
-          <Title>
-            <span>
-              В этом разделе вы можете изменить свои персональные данные{" "}
-            </span>
-          </Title>
-        </ContentCategory>
-        <InputBlock onSubmit={onSubmit}>
-          <BaseInput 
-            label={"Имя"}
-            // value={nameValue} 
-            // onChange={(e) => setNameValue(e.target.value)} 
-            setValue={setValue}
-            error={errors.userName?.message}
-            register={{
-              ...register('userName', {
-                required: 'Введите свое Имя',
-                // onBlur: (func, value) => value ? func(true) : func(false)
-              })
-            }}
-            valueField={watch('userName')} type={""}          />
-          <BaseInput 
-            label={"Логин"}
-            // value={loginValue} 
-            // onChange={(e) => setLoginValue(e.target.value)} 
-            setValue={setValue}
-            error={errors.loginValue?.message}
-            register={{
-              ...register('loginValue', {
-                required: 'Введите логин ', minLength: {
-                  value: 5,
-                  message: 'Минимум 5 символов'
-                },
-              })
-            }}
-            valueField={watch('loginValue')} type={""}          />
-          <BaseInput 
-            label={"Пароль"} 
-            type="password" 
-            // value={passwordValue} 
-            // onChange={(e) => setPasswordValue(e.target.value)} 
-            setValue={setValue}
-            error={errors.passwordUser?.message} 
-            register={{...register('passwordUser', {required: 'Введите пароль', minLength: {
-              value: 8,
-              message: 'Минимум 8 символов'
-            },})}}
-            valueField={watch('passwordUser')}
-          />
-          <ComponentBlock onClick={onSubmit}>
-            <ButtonComponent size='medium'>Сохранить</ButtonComponent>
-          </ComponentBlock>
-        </InputBlock>
-      </Box>
-    </Container>
+                <Button>
+                  <Link href={'/account/order-history'}>
+                    <span>История заказов </span>
+                  </Link>
+                </Button>
+              <Button active={activeButton} onClick={exitTheAccount}>
+                <span>Выход </span>
+              </Button>
+            </ButtonBox>
+            <Title>
+              <span>
+                В этом разделе вы можете изменить свои персональные данные{" "}
+              </span>
+            </Title>
+          </ContentCategory>
+          <InputBlock onSubmit={handleSubmit(onSubmit)}>
+            <BaseInput 
+              label={"Имя"}
+              setValue={setValue}
+              error={errors.userName?.message}
+              register={{
+                ...register('userName', {
+                  required: 'Введите свое Имя',
+                })
+              }}
+              valueField={watch('userName')} type={""}          />
+            <BaseInput 
+              label={"Логин"}
+              setValue={setValue}
+              error={errors.loginValue?.message}
+              register={{
+                ...register('loginValue', {
+                  required: 'Введите логин ', minLength: {
+                    value: 5,
+                    message: 'Минимум 5 символов'
+                  },
+                })
+              }}
+              valueField={watch('loginValue')} type={""}          />
+            <BaseInput 
+              label={"Пароль"} 
+              type="password" 
+              setValue={setValue}
+              error={errors.passwordUser?.message} 
+              register={{...register('passwordUser', {required: 'Введите пароль', minLength: {
+                value: 8,
+                message: 'Минимум 8 символов'
+              },})}}
+              valueField={watch('passwordUser')}
+            />
+            <ComponentBlock >
+              <ButtonComponent type='submit' size='medium'>Сохранить</ButtonComponent>
+            </ComponentBlock>
+          </InputBlock>
+          {
+            updateActive && <PopUpWindow text={'Данные профиля изменены'}/>
+          }
+        </Box>
+      </Container>
+    </ThemeProvider>
   );
 }
 

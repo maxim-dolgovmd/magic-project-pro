@@ -1,8 +1,9 @@
 import React from "react"
-import styled from 'styled-components'
+import styled, { ThemeProvider } from 'styled-components'
 
 import Image from "next/image"
 import { device, size } from "../device/device"
+import PriceImg from '../../assets/icon/price.svg'
 
 
 const Box = styled.div`
@@ -14,9 +15,14 @@ const Box = styled.div`
     font-weight: 400;
     font-size: 20px;
     line-height: 18px;
+
+    svg path {
+        fill: ${({ theme }) => theme.dinamicPathTitle}
+    }
 `
 
 const Count = styled.div`
+    color: ${({theme}) => theme.dinamicCompountOrder};
     @media ${device.tablet} {
         width: 80px;
     }
@@ -31,7 +37,7 @@ const BoxName = styled.div`
     font-weight: 400;
     font-size: 16px;
     line-height: 24px;
-    color: #F2F2F3;
+    color: ${({theme}) => theme.dinamicCompountOrder};
 
     @media ${device.tablet} {
         width: auto;
@@ -84,20 +90,19 @@ const IngridientOrder: React.FC<IngridientTypeOrders> = ({
     quantity,
 }) => {
 
-
     return (
-        <IngrOrder>
-            <BoxTitle>
-                <div>
-                    <ImageDesktop src={`http://localhost:5555${photo}`} width={64} height={64} alt="Crator" />
-                </div>
-                <BoxName>{nameItem}</BoxName>
-            </BoxTitle>
-            <Box>
-                <Count>{quantity} x {price}</Count>
-                <Image src='/price.svg' width={24} height={24} alt="PriceSvg" />
-            </Box>
-        </IngrOrder>
+            <IngrOrder>
+                <BoxTitle>
+                    <div>
+                        <ImageDesktop src={`http://localhost:5555${photo}`} width={64} height={64} alt="Crator" />
+                    </div>
+                    <BoxName>{nameItem}</BoxName>
+                </BoxTitle>
+                <Box>
+                    <Count>{quantity} x {price}</Count>
+                    <PriceImg/>
+                </Box>
+            </IngrOrder>
     )
 }
 

@@ -14,25 +14,24 @@ import { useRouter } from "next/router";
 import { useAppDispatch } from "@/components/redux/store";
 import { setIsMenuClicked } from '../../redux/slices/addCartSlice'
 import { StorageSelect, setUser } from "@/components/redux/slices/storageSlice";
+import { GlobalType } from "../global/globalStyles";
 
 type AciveButton = {
-    active?: any
-    access?: any
+    active?: boolean
+    access?: boolean
 }
 
 type AciveImage = {
-    active?: any
+    active?: boolean
 }
 
 const Window = styled.div`
     position: fixed;
-    top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: #1C1C21;
-    display: flex;
-    padding: 50px 15px;
+    background: ${({ theme }) => theme.body};
+    padding: 0px 15px;
 `
 
 const Block = styled.div`
@@ -52,20 +51,11 @@ const BoxBlock = styled.div`
     cursor: pointer;
 
     &:hover {
-        color: #F2F2F3;
+        color: ${({ theme }: GlobalType) => theme.hoverTextNavbar};
         svg path {
-            fill: #F2F2F3;
-    }
-    }
-
-    ${(props: AciveImage) => {
-        return props.active && {
-            color: '#F2F2F3',
-            path: {
-                fill: '#F2F2F3'
-            }
+            fill: ${({ theme }: GlobalType) => theme.hoverTextNavbar};
         }
-    }};   
+    }
 `
 
 const AccountBox = styled.div`
@@ -139,15 +129,15 @@ const IconActive = styled.div`
     return (
     props.active && {
         display: 'none'
+    })}}
+
+    svg path {
+        fill: ${({ theme }) => theme.menuColorImg}
     }
-    );
-}}
 `
   
 
 const Navbar = () => {
-
-    const { isMenuClicked } = useSelector(AddCartSelect)
     const router = useRouter()
     const dispatch = useAppDispatch()
     const {user} = useSelector(StorageSelect)

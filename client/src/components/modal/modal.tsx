@@ -20,7 +20,7 @@ const Window = styled.div`
 const OrderContent = styled.h1`
     /* height: 720px; */
     /* max-width: 718px; */
-    background: #1C1C21;
+    background: ${({ theme }) => theme.modal};
     border: 1px solid rgba(76, 76, 255, 0.2);
     box-shadow: 
         0px 24px 32px rgba(0, 0, 0, 0.04), 

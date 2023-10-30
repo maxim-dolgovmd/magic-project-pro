@@ -32,7 +32,6 @@ const ColumnSignIn = styled.div`
 `;
 
 const Title = styled.div`
-  color: #f2f2f3;
   font-weight: 700;
   font-size: 24px;
   line-height: 30px;

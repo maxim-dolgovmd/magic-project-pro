@@ -25,21 +25,16 @@ const Grid = styled.div`
 `
 
 type AciveImage = {
-    active?: any
+    active?: boolean
 }
 
 const Box = styled.div`
     display: flex;
     justify-content: flex-start;
-
-    /* @media ${device.laptop} {
-        flex-direction: column;
-    } */
 `
 const BoxBlock = styled.div`
     display: flex;
     gap: 8px;
-    /* align-items: flex-end; */
     color: #8585AD;
     padding: 16px 20px;
     font-size: 16px;

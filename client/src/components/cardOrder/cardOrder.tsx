@@ -6,13 +6,14 @@ import {IIngredient, Order, setOrderModal} from '../../redux/slices/addCartSlice
 import {statusCategories} from "../statusCategories/statusCategories";
 import { useAppDispatch } from "@/components/redux/store";
 import { device } from "../device/device";
+import PriceImg from '../../assets/icon/price.svg'
 
 // test
 const OrderBlock = styled.div`
   padding: 24px;
   /* width: 844px; */
   /* height: 246px; */
-  background-color: #1c1c21;
+  background: ${({ theme }) => theme.backgroundCart};
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.04), 0px 0px 2px rgba(0, 0, 0, 0.06),
     0px 0px 1px rgba(0, 0, 0, 0.04);
   border-radius: 40px;
@@ -22,7 +23,7 @@ const OrderBlock = styled.div`
   gap: 24px;
   cursor: pointer;
   :hover {
-    background: #2F2F37;
+    background: ${({ theme }) => theme.hoverCardOrder};
   }
 `;
 
@@ -37,6 +38,7 @@ const Number = styled.div`
   font-weight: 400;
   font-size: 28px;
   line-height: 24px;
+  color: ${({ theme }) => theme.ingridientTextBox};
 `;
 
 const TimeOrder = styled.div`
@@ -60,13 +62,14 @@ const Title = styled.div`
   font-size: 24px;
   line-height: 30px;
   display: flex;
+  color: ${({ theme }) => theme.ingridientTextBox};
 `;
 
 const Status = styled.div`
   font-weight: 400;
   font-size: 16px;
   line-height: 24px;
-  color: #00CCCC;
+  color: ${({ theme }) => theme.statusCardOrder};
   display: flex;
 `;
 
@@ -97,6 +100,10 @@ const PriceSum = styled.div`
   display: flex;
   gap: 8px;
   align-items: center;
+
+  svg path {
+      fill: ${({ theme }) => theme.priceImg}
+  }
 `;
 
 const Price = styled.div`
@@ -108,6 +115,7 @@ const Price = styled.div`
   @media ${device.tablet} {
     padding: 0px;
   }
+  color: ${({ theme }) => theme.ingridientTextBox};
 `;
 
 // export const ImageBoxFunction = (count, zIndex, right) => {
@@ -277,7 +285,7 @@ const CardOrder: React.FC<OrdersPropsType> = (orders) => {
         </ImageBlock>
         <PriceSum>
           <Price>{price}</Price>
-          <Image src="/price.svg" width={24} height={24} alt="PriceSvg" />
+          <PriceImg/>
         </PriceSum>
       </ImageOrders>
     </OrderBlock>

@@ -1,12 +1,10 @@
 import React from "react";
 import styled from "styled-components";
 import { useRouter } from "next/router";
-import DinamickPath, { orders } from "@/components/components/dinamickPath/dinamickPath";
+import DinamickPath from "@/components/components/dinamickPath/dinamickPath";
 import { statusCategories } from "@/components/components/statusCategories/statusCategories";
-import { useAppDispatch } from "@/components/redux/store";
-import { IIngredient, setActiveIngr } from "@/components/redux/slices/addCartSlice";
+import { IIngredient } from "@/components/redux/slices/addCartSlice";
 import { device } from "@/components/components/device/device";
-import { useGetOneOrderQuery } from "@/components/services/ordersApi";
 
 const Window = styled.div`
     position: fixed;
@@ -15,7 +13,7 @@ const Window = styled.div`
     z-Index: 200;
     width: 100%;
     height: 100%;
-    background: rgba(0,0,0,1);
+    background: ${({ theme }) => theme.backgroundWindow};
     display: flex;
     justify-content: center;
     align-items: center;
@@ -28,12 +26,10 @@ const Window = styled.div`
 
 const OrderContent = styled.h1`
     max-width: 718px;
-    background:  rgba(0,0,0,1);
-    border: 1px solid  rgba(0,0,0,1);
+    background: ${({ theme }) => theme.backgroundWindow};
     display: flex;
 
     @media ${device.tablet} {
-      /* height: 100%; */
       width: 100%;
     }
 `
@@ -43,10 +39,7 @@ type IdNumberType = {
 }
 
 interface ContextType {
-  params: IdNumberType,
-  locales: any,
-  locale: any,
-  defaultLocale: any,
+  params: IdNumberType
 }
 
 type StatusTypeEn = 'ready' | 'in preparation' | 'handed over to courier' | 'canceled' | 'closed';
@@ -68,6 +61,18 @@ interface ModalType {
   order: ModalOrder
 }
 
+interface IngredientPaths {
+  _id: string,
+  largePhotoUrl: string,
+  normalPhotoUrl: string,
+  mobilePhotoUrl: string,
+  previewPhotoUrl: string,
+  price: number,
+  name: string,
+  category: string,
+  quantity: number,
+}
+
 const InfoCardOrder: React.FC<ModalType> = ({order}) => {
   console.log(order)
 
@@ -83,7 +88,6 @@ const InfoCardOrder: React.FC<ModalType> = ({order}) => {
   return (
     <Window onClick={() => closedModal()}>
       <OrderContent onClick={(e) => e.stopPropagation()}>
-        {/* <DinamickPath closedModal={closedModal}/> */}
         <DinamickPath closedModal={closedModal}  order={orderObject} status={statusCategories[orderObject?.status]}/>
       </OrderContent>
     </Window>
@@ -107,7 +111,7 @@ export const getStaticPaths = async () => {
   const responce = await fetch(`http://localhost:5555/order`)
   const data = await responce.json()
 
-  const paths = data?.map((order: any) => {
+  const paths = data?.map((order: IngredientPaths) => {
     return {
       params: {id: String(order?._id)}
     }

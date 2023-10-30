@@ -1,8 +1,11 @@
 import React from "react";
-import styled from "styled-components";
+import styled, { ThemeProvider } from "styled-components";
 import Image from "next/image";
 
 import Input from "./input";
+import { darkTheme, lightTheme } from "../theme/theme";
+import { useSelector } from "react-redux";
+import { ThemeModeSelect } from "@/components/redux/slices/storageSlice";
 // import { type } from "os";
 
 const InputStyle = styled(Input)`
@@ -75,7 +78,7 @@ interface BaseInputType {
   type?: string,
   register?: any,
   setValue?: any,
-  valueField?: string
+  valueField?: string,
 }
 
 const BaseInput: React.FC<BaseInputType> = ({
@@ -86,6 +89,8 @@ const BaseInput: React.FC<BaseInputType> = ({
   setValue,
   valueField,
 }) => {
+
+  const themeMode = useSelector(ThemeModeSelect)
   const [isFocus, setIsFocus] = React.useState(false);
 
   const setClose = () => {
@@ -93,6 +98,7 @@ const BaseInput: React.FC<BaseInputType> = ({
   }
 
   return (
+    <ThemeProvider theme={themeMode === 'light' ? darkTheme : lightTheme}>
     <div>
       <LabelBlock>
         <InputStyle
@@ -114,15 +120,13 @@ const BaseInput: React.FC<BaseInputType> = ({
           <CloseIngr onClick={setClose}>
               <Image src="/close.svg" width={16} height={16} alt="CloseSvg" /> 
           </CloseIngr> 
-              // <CloseIngr >
-              //     <Edit /> 
-              // </CloseIngr>
         }
       </LabelBlock>
       {error && (
         <div style={{ paddingLeft: "16px", color: "red" }}>{error}</div>
       )}
     </div>
+    </ThemeProvider>
   );
 };
 
